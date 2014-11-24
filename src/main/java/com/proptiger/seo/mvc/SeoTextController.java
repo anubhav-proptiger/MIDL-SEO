@@ -17,9 +17,9 @@ import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.Gson;
 import com.proptiger.core.pojo.response.APIResponse;
-import com.proptiger.data.model.URLDetail;
-import com.proptiger.data.service.SeoPageService;
-import com.proptiger.data.service.URLService;
+import com.proptiger.seo.model.URLDetail;
+import com.proptiger.seo.service.SeoPageService;
+import com.proptiger.seo.service.URLService;
 
 /**
  * @author mandeep

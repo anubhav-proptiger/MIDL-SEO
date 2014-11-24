@@ -29,12 +29,10 @@ import com.proptiger.core.model.cms.Suburb;
 import com.proptiger.core.model.proptiger.Image;
 import com.proptiger.core.model.proptiger.PortfolioListing;
 import com.proptiger.core.util.Constants;
-import com.proptiger.data.init.NullAwareBeanUtilsBean;
-import com.proptiger.data.model.RedirectUrlMap;
-import com.proptiger.data.model.URLDetail;
-import com.proptiger.data.repo.RedirectUrlMapDao;
-import com.proptiger.data.service.user.portfolio.PortfolioService;
-import com.proptiger.data.util.PageType;
+import com.proptiger.core.util.NullAwareBeanUtilsBean;
+import com.proptiger.seo.model.PageType;
+import com.proptiger.seo.model.RedirectUrlMap;
+import com.proptiger.seo.model.URLDetail;
 
 /**
  * 

@@ -34,6 +34,7 @@ import com.proptiger.core.model.cms.Locality;
 import com.proptiger.core.model.cms.Project;
 import com.proptiger.core.model.cms.Property;
 import com.proptiger.core.model.cms.Suburb;
+import com.proptiger.core.pojo.LimitOffsetPageRequest;
 import com.proptiger.core.pojo.Selector;
 import com.proptiger.core.util.Constants;
 import com.proptiger.core.util.ExclusionAwareBeanUtilsBean;
@@ -42,10 +43,10 @@ import com.proptiger.seo.model.SeoFooter;
 import com.proptiger.seo.model.SeoPage;
 import com.proptiger.seo.model.SeoPage.Tokens;
 import com.proptiger.seo.model.URLDetail;
-import com.proptiger.core.pojo.LimitOffsetPageRequest;
 import com.proptiger.seo.repo.ProjectSeoTagsDao;
 import com.proptiger.seo.repo.SeoFooterDao;
 import com.proptiger.seo.repo.SeoPageDao;
+import com.proptiger.seo.service.SeoPageService.CompositeSeoTokenData;
 
 @Service
 public class SeoPageService {

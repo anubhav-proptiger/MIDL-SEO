@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.proptiger.core.mvc.BaseController;
 import com.proptiger.core.pojo.response.APIResponse;
-import com.proptiger.data.service.URLService;
+import com.proptiger.seo.service.URLService;
 
 @Controller
 @RequestMapping
