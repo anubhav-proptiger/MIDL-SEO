@@ -48,7 +48,7 @@ public class SeoPage extends BaseModel {
                 "centerLongitude", "%f"), ProjectLatitude("<project latitude>", "project", "longitude", "%f"), ProjectLongitude(
                 "<project longitude>", "project", "longitude", "%f"), ServerName("<server name>", null, "serverName",
                 "%s"), Url("<url>", null, "url", "%s"), ProjectImageUrl("<project image url>", "project", "imageURL",
-                "%s"), Page("<page>", null, "page", "Page %d");
+                "%s"), Page("<page>", null, "page", "Page %d"), ImageType("<image type>", null, "imageType", "%s");
 
         private String value;
         private String fieldName1;

@@ -8,6 +8,8 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
+import com.proptiger.data.util.PageType;
+
 /**
  * 
  *
@@ -35,6 +37,7 @@ public class URLDetail {
 	private Integer objectId;
 	private Integer imageId;
 	private Integer page;
+	private String  imageType;
     /**
      * Default Value of bedroomString is empty string. Do not change it.
      */
@@ -234,5 +237,13 @@ public class URLDetail {
 
 	public void setPage(Integer page) {
 		this.page = page;
+	}
+
+	public String getImageType() {
+		return imageType;
+	}
+
+	public void setImageType(String imageType) {
+		this.imageType = imageType;
 	}
 }

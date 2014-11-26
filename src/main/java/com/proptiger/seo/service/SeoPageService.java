@@ -90,6 +90,9 @@ public class SeoPageService {
 
     @Autowired
     private ProjectSeoTagsDao  projectSeoTagsDao;
+    
+    @Autowired
+    private ImageService	   imageService;
 
     private static Logger      logger       = LoggerFactory.getLogger(SeoPageService.class);
 
@@ -115,7 +118,10 @@ public class SeoPageService {
      * the appropriate entry and finally returned.
      */
     private SeoPage getSeoPage(URLDetail urlDetail) {
-        String url = urlDetail.getUrl();
+    	String url = urlDetail.getUrl();
+    	if (url !=null && url.startsWith("gallery/")) {
+    		updateUrlDetailWithImageType(urlDetail, url);
+    	}
         SeoPage seoPage = applicationContext.getBean(SeoPageService.class).getSeoPageByTemplateId(
                 urlDetail.getTemplateId(),
                 url);
@@ -126,7 +132,36 @@ public class SeoPageService {
         return getSeoMetaContentForPage(urlDetail, seoPage);
     }
 
-    private void copyProperties(ProjectSeoTags projectSeoTags, SeoPage seoPage) {
+    private void updateUrlDetailWithImageType(URLDetail urlDetail, String url) {
+    	Long imageId = Long.parseLong(url.substring(url.lastIndexOf("-") + 1));
+    	Image image = imageService.getImage(imageId);
+    	if (image != null) {
+    		String imageType = image.getImageTypeObj().getType(); 
+    		// Constructing template Id dynamically by appending "_ImageType" (in upper case)
+    		urlDetail.setTemplateId(urlDetail.getTemplateId() + "_" + imageType.toUpperCase()); 
+    		
+    		//Introducing space before Uppercase character of ImageType 
+    		imageType = addSpaceBeforeUpperCaseCharacter(imageType, 0, imageType.length());
+    				
+    		// First character from ImageType to convert in upper case
+    	    String startChar = imageType.substring(0, 1);
+    	    imageType = imageType.replaceFirst(startChar, startChar.toUpperCase());
+    		urlDetail.setImageType(imageType);
+    	}
+	}
+
+    private String addSpaceBeforeUpperCaseCharacter(String imageType, int index, int length) {
+		if (index < length) {
+			if (Character.isUpperCase(imageType.charAt(index))) {
+				imageType = imageType.replace(imageType.substring(index, index + 1), " " + imageType.charAt(index));
+				return addSpaceBeforeUpperCaseCharacter(imageType, index + 2, length);
+			}
+			return addSpaceBeforeUpperCaseCharacter(imageType, index + 1, length);
+		}
+		return imageType;
+	}
+
+	private void copyProperties(ProjectSeoTags projectSeoTags, SeoPage seoPage) {
         BeanUtilsBean beanUtilsBean = new ExclusionAwareBeanUtilsBean();
         for (Field field : projectSeoTags.getClass().getDeclaredFields()) {
             try {
@@ -266,6 +301,7 @@ public class SeoPageService {
         String imageURL = null;
         Gson gson = new Gson();
         Integer page = null;
+        String  imageType = null;
 
         if (urlDetail.getPropertyId() != null) {
             property = propertyService.getPropertyFromSolr(urlDetail.getPropertyId());
@@ -359,6 +395,10 @@ public class SeoPageService {
         	page = urlDetail.getPage();
         }
         
+        if (urlDetail.getImageType() != null) {
+        	imageType = urlDetail.getImageType();
+        }
+        
         return new CompositeSeoTokenData(
                 property,
                 project,
@@ -377,7 +417,8 @@ public class SeoPageService {
                 serverName,
                 url,
                 imageURL,
-                page);
+                page,
+                imageType);
     }
 
     /*
@@ -424,6 +465,7 @@ public class SeoPageService {
         private String   url;
         private String   imageURL;
         private Integer  page;
+        private String   imageType;
 
         public CompositeSeoTokenData(
                 Property property,
@@ -443,7 +485,8 @@ public class SeoPageService {
                 String serverName,
                 String url,
                 String imageURL,
-                Integer page) {
+                Integer page,
+                String imageType) {
             this.property = property;
             this.project = project;
             this.locality = locality;
@@ -462,6 +505,7 @@ public class SeoPageService {
             this.url = url;
             this.imageURL = imageURL;
             this.page = page;
+            this.imageType = imageType;
         }
 
         public Property getProperty() {
@@ -606,6 +650,14 @@ public class SeoPageService {
 
 		public void setPage(Integer page) {
 			this.page = page;
+		}
+
+		public String getImageType() {
+			return imageType;
+		}
+
+		public void setImageType(String imageType) {
+			this.imageType = imageType;
 		}
     }
 }
