@@ -1,11 +1,10 @@
 package com.proptiger.seo.service;
 
-import static org.testng.AssertJUnit.assertEquals;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.Test;
 
-import com.proptiger.data.service.URLService.ValidURLResponse;
+import com.proptiger.core.service.AbstractTest;
+import com.proptiger.seo.service.URLService.ValidURLResponse;
 
 public class URLServiceTest extends AbstractTest{
     @Autowired
