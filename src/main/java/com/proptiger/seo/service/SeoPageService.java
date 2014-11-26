@@ -46,7 +46,6 @@ import com.proptiger.seo.model.URLDetail;
 import com.proptiger.seo.repo.ProjectSeoTagsDao;
 import com.proptiger.seo.repo.SeoFooterDao;
 import com.proptiger.seo.repo.SeoPageDao;
-import com.proptiger.seo.service.SeoPageService.CompositeSeoTokenData;
 
 @Service
 public class SeoPageService {
