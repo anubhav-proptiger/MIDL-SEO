@@ -30,9 +30,11 @@ import com.proptiger.core.model.proptiger.Image;
 import com.proptiger.core.model.proptiger.PortfolioListing;
 import com.proptiger.core.util.Constants;
 import com.proptiger.core.util.NullAwareBeanUtilsBean;
+import com.proptiger.seo.interceptor.ResponseInterceptor;
 import com.proptiger.seo.model.PageType;
 import com.proptiger.seo.model.RedirectUrlMap;
 import com.proptiger.seo.model.URLDetail;
+import com.proptiger.seo.repo.RedirectUrlMapDao;
 
 /**
  * 
@@ -41,32 +43,12 @@ import com.proptiger.seo.model.URLDetail;
 @Service
 public class URLService {
     private String            EMPTY_URL = "";
-    @Autowired
-    private CityService       cityService;
-
-    @Autowired
-    private LocalityService   localityService;
-
-    @Autowired
-    private SuburbService     suburbService;
-
-    @Autowired
-    private ProjectService    projectService;
-
-    @Autowired
-    private PropertyService   propertyService;
-
-    @Autowired
-    private BuilderService    builderService;
-
+    
     @Autowired
     private RedirectUrlMapDao redirectUrlMapDao;
 
     @Autowired
-    private PortfolioService  portfolioService;
-    
-    @Autowired
-    private ImageService	  imageService;
+    private ResponseInterceptor responseInterceptor;
     
     private static Pattern PATTERN = Pattern.compile("^(?:.*)-(\\d+)(?:/[\\d+]{0,2}bhk(?:\\?\\d+-\\d+-lacs)?)?$");
 
@@ -129,7 +111,7 @@ public class URLService {
 		if (domainObject.equals(DomainObject.city)) {
 			City city = null;
 			try {
-				city = cityService.getCity(objectId);
+				city = responseInterceptor.getCityById(objectId);//cityService.getCity(objectId);
 			}
 			catch (Exception e) {
 				city = null;
@@ -188,7 +170,8 @@ public class URLService {
                 responseStatus = HttpStatus.SC_MOVED_PERMANENTLY;
                 Property property = null;
                 try {
-                    property = propertyService.getPropertyFromSolr(urlDetail.getPropertyId());
+                    property = responseInterceptor.getPropertyById(urlDetail.getPropertyId());
+                    //propertyService.getPropertyFromSolr(urlDetail.getPropertyId());
                 }
                 catch (ResourceNotAvailableException e) {
                     property = null;
@@ -208,7 +191,8 @@ public class URLService {
                 responseStatus = HttpStatus.SC_MOVED_PERMANENTLY;
                 Project project = null;
                 try {
-                    project = projectService.getProjectDataFromSolr(urlDetail.getProjectId());
+                    project = responseInterceptor.getProjectById(urlDetail.getProjectId());
+                    //projectService.getProjectDataFromSolr(urlDetail.getProjectId());
                 }
                 catch (ResourceNotAvailableException e) {
                     project = null;
@@ -230,14 +214,16 @@ public class URLService {
                 Builder builder = null;
                 City builderCity = new City();
                 try {
-                    builder = builderService.getBuilderById(urlDetail.getBuilderId());
+                    builder = responseInterceptor.getBuilderById(urlDetail.getBuilderId());
+                    //builderService.getBuilderById(urlDetail.getBuilderId());
                 }
                 catch (ResourceNotAvailableException e) {
                     builder = null;
                 }
                 try {
                     if (urlDetail.getCityName() != null && !urlDetail.getCityName().isEmpty()) {
-                        builderCity = cityService.getCityByName(urlDetail.getCityName().replace("/", ""));
+                        builderCity = responseInterceptor.getCityByName(urlDetail.getCityName().replace("/", ""));
+                        //cityService.getCityByName(urlDetail.getCityName().replace("/", ""));
                     }
                 }
                 catch (ResourceNotAvailableException e) {
@@ -373,7 +359,8 @@ public class URLService {
             case CITY_URLS:
                 City city = null;
                 try {
-                    city = cityService.getCityByName(urlDetail.getCityName());
+                    city = responseInterceptor.getCityByName(urlDetail.getCityName());
+                    //cityService.getCityByName(urlDetail.getCityName());
                 }
                 catch (ResourceNotAvailableException e) {
                     city = null;
@@ -405,7 +392,8 @@ public class URLService {
     				urlResponse = new ValidURLResponse(HttpStatus.SC_MOVED_PERMANENTLY, "");
     			}
     			
-    			Image image = imageService.getImage(urlDetail.getImageId());
+    			Image image = responseInterceptor.getImageById(urlDetail.getImageId());
+    			//imageService.getImage(urlDetail.getImageId());
     			/*
     			 * HttpStatus is 301, domain object is active and image is active then,
     			 * either url will be same as image object page url or different.
@@ -444,8 +432,8 @@ public class URLService {
                 break;
             case PORTFOLIO_URLS:
                 if (urlDetail.getPortfolioId() != null) {
-                    PortfolioListing portfolioListing = portfolioService.getActivePortfolioOnId(urlDetail
-                            .getPortfolioId());
+                    PortfolioListing portfolioListing = responseInterceptor.getPortfolioById(urlDetail.getPortfolioId());
+                    //portfolioService.getActivePortfolioOnId(urlDetail.getPortfolioId());
                     if (portfolioListing == null) {
                         responseStatus = HttpStatus.SC_NOT_FOUND;
                     }
@@ -455,7 +443,7 @@ public class URLService {
                 if (urlDetail.getCityName() != null && !urlDetail.getCityName().isEmpty()) {
                     city = null;
                     try {
-                        city = cityService.getCityByName(urlDetail.getCityName());
+                        city = responseInterceptor.getCityByName(urlDetail.getCityName());//cityService.getCityByName(urlDetail.getCityName());
                     }
                     catch (ResourceNotAvailableException e) {
                         city = null;
@@ -482,7 +470,8 @@ public class URLService {
         Integer suburbId = null;
         Integer cityId = null;
         if (domainType.equals(DomainObject.property.getText())) {
-            projectId = projectService.getProjectIdForPropertyId(id);
+            projectId = responseInterceptor.getProjectIdByDeletedPropertyId(id);
+            //projectService.getProjectIdForPropertyId(id);
             if (projectId == null) {
                 return EMPTY_URL;
             }
@@ -493,14 +482,16 @@ public class URLService {
             Project project = null;
             if (projectId != null) {
                 try {
-                    project = projectService.getProjectData(projectId);
+                    project = responseInterceptor.getProjectById(projectId);
+                    //projectService.getProjectData(projectId);
                     return project.getURL();
                 }
                 catch (ResourceNotAvailableException | NullPointerException e) {
                     project = null;
                 }
             }
-            project = projectService.getActiveOrInactiveProjectById(id);
+            project = responseInterceptor.getActiveInactiveProject(id);
+            //projectService.getActiveOrInactiveProjectById(id);
             if (project == null) {
                 return EMPTY_URL;
             }
@@ -514,7 +505,8 @@ public class URLService {
             Locality locality = null;
             if (localityId != null) {
                 try {
-                    locality = localityService.getLocality(localityId);
+                    locality = responseInterceptor.getLocalityById(localityId);
+                    //localityService.getLocality(localityId);
                     return locality.getUrl();
                 }
                 catch (ResourceNotAvailableException | NullPointerException e) {
@@ -522,7 +514,8 @@ public class URLService {
                 }
             }
             else {
-                locality = localityService.getActiveOrInactiveLocalityById(id);
+                locality = responseInterceptor.getActiveInactiveLocality(id);
+                //localityService.getActiveOrInactiveLocalityById(id);
                 if (locality == null) {
                     return EMPTY_URL;
                 }
@@ -538,7 +531,8 @@ public class URLService {
             Suburb suburb = null;
             if (suburbId != null) {
                 try {
-                    suburb = suburbService.getSuburb(suburbId);
+                    suburb = responseInterceptor.getSuburbById(suburbId);
+                    //suburbService.getSuburb(suburbId);
                     return suburb.getUrl();
                 }
                 catch (ResourceNotAvailableException | NullPointerException e) {
@@ -546,7 +540,8 @@ public class URLService {
                 }
             }
             else {
-                suburb = suburbService.getActiveOrInactiveSuburbById(id);
+                suburb = responseInterceptor.getActiveInactiveSuburb(id);
+                //suburbService.getActiveOrInactiveSuburbById(id);
                 if (suburb == null) {
                     return EMPTY_URL;
                 }
@@ -561,7 +556,8 @@ public class URLService {
             City city = null;
             if (cityId != null) {
                 try {
-                    city = cityService.getCity(cityId);
+                    city = responseInterceptor.getCityById(cityId);
+                    //cityService.getCity(cityId);
                     return city.getUrl();
                 }
                 catch (ResourceNotAvailableException | NullPointerException e) {
@@ -581,7 +577,8 @@ public class URLService {
             case locality:
                 Locality locality = null;
                 try {
-                    locality = localityService.getLocality(urlDetail.getLocalityId());
+                    locality = responseInterceptor.getLocalityById(urlDetail.getLocalityId());
+                    //localityService.getLocality(urlDetail.getLocalityId());
                 }
                 catch (ResourceNotAvailableException e) {
                     locality = null;
@@ -601,7 +598,8 @@ public class URLService {
             case suburb:
                 Suburb suburb = null;
                 try {
-                    suburb = suburbService.getSuburbById(urlDetail.getLocalityId());
+                    suburb = responseInterceptor.getSuburbById(urlDetail.getLocalityId());
+                    //suburbService.getSuburbById(urlDetail.getLocalityId());
                 }
                 catch (ResourceNotAvailableException e) {
                     suburb = null;

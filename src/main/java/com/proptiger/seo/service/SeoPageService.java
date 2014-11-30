@@ -34,10 +34,12 @@ import com.proptiger.core.model.cms.Locality;
 import com.proptiger.core.model.cms.Project;
 import com.proptiger.core.model.cms.Property;
 import com.proptiger.core.model.cms.Suburb;
+import com.proptiger.core.model.proptiger.Image;
 import com.proptiger.core.pojo.LimitOffsetPageRequest;
 import com.proptiger.core.pojo.Selector;
 import com.proptiger.core.util.Constants;
 import com.proptiger.core.util.ExclusionAwareBeanUtilsBean;
+import com.proptiger.seo.interceptor.ResponseInterceptor;
 import com.proptiger.seo.model.ProjectSeoTags;
 import com.proptiger.seo.model.SeoFooter;
 import com.proptiger.seo.model.SeoPage;
@@ -49,24 +51,6 @@ import com.proptiger.seo.repo.SeoPageDao;
 
 @Service
 public class SeoPageService {
-
-    @Autowired
-    private ProjectService     projectService;
-
-    @Autowired
-    private CityService        cityService;
-
-    @Autowired
-    private LocalityService    localityService;
-
-    @Autowired
-    private SuburbService      suburbService;
-
-    @Autowired
-    private BuilderService     builderService;
-
-    @Autowired
-    private PropertyService    propertyService;
 
     @Autowired
     private ApplicationContext appContext;
@@ -92,7 +76,7 @@ public class SeoPageService {
     private ProjectSeoTagsDao  projectSeoTagsDao;
     
     @Autowired
-    private ImageService	   imageService;
+    private ResponseInterceptor responseInterceptor;
 
     private static Logger      logger       = LoggerFactory.getLogger(SeoPageService.class);
 
@@ -134,7 +118,7 @@ public class SeoPageService {
 
     private void updateUrlDetailWithImageType(URLDetail urlDetail, String url) {
     	Long imageId = Long.parseLong(url.substring(url.lastIndexOf("-") + 1));
-    	Image image = imageService.getImage(imageId);
+    	Image image = responseInterceptor.getImageById(imageId);
     	if (image != null) {
     		String imageType = image.getImageTypeObj().getType(); 
     		// Constructing template Id dynamically by appending "_ImageType" (in upper case)
@@ -304,7 +288,8 @@ public class SeoPageService {
         String  imageType = null;
 
         if (urlDetail.getPropertyId() != null) {
-            property = propertyService.getPropertyFromSolr(urlDetail.getPropertyId());
+            property = responseInterceptor.getPropertyById(urlDetail.getPropertyId());
+            //propertyService.getPropertyFromSolr(urlDetail.getPropertyId());
             if (property == null) {
                 throw new ResourceNotAvailableException(ResourceType.PROPERTY, ResourceTypeAction.GET);
             }
@@ -326,7 +311,8 @@ public class SeoPageService {
         if (urlDetail.getProjectId() != null) {
             String json = "{\"fields\":[\"distinctBedrooms\"]}";
             Selector selector = gson.fromJson(json, Selector.class);
-            project = projectService.getProjectInfoDetailsFromSolr(selector, urlDetail.getProjectId());
+            project = responseInterceptor.getProjectById(urlDetail.getProjectId(), selector);
+            //projectService.getProjectInfoDetailsFromSolr(selector, urlDetail.getProjectId());
             if (project == null) {
                 throw new ResourceNotAvailableException(ResourceType.PROJECT, ResourceTypeAction.GET);
             }
@@ -344,7 +330,8 @@ public class SeoPageService {
             imageURL = project.getImageURL();
         }
         if (urlDetail.getLocalityId() != null) {
-            locality = localityService.getLocality(urlDetail.getLocalityId());
+            locality = responseInterceptor.getLocalityById(urlDetail.getLocalityId());
+            //localityService.getLocality(urlDetail.getLocalityId());
             if (locality == null) {
                 throw new ResourceNotAvailableException(ResourceType.LOCALITY, ResourceTypeAction.GET);
             }
@@ -352,14 +339,15 @@ public class SeoPageService {
             city = suburb.getCity();
         }
         if (urlDetail.getSuburbId() != null) {
-            suburb = suburbService.getSuburbById(urlDetail.getSuburbId());
+            suburb = responseInterceptor.getSuburbById(urlDetail.getSuburbId());
+            //suburbService.getSuburbById(urlDetail.getSuburbId());
             if (suburb == null) {
                 throw new ResourceNotAvailableException(ResourceType.SUBURB, ResourceTypeAction.GET);
             }
             city = suburb.getCity();
         }
         if (urlDetail.getCityName() != null) {
-            city = cityService.getCityByName(urlDetail.getCityName());
+            city = responseInterceptor.getCityByName(urlDetail.getCityName());//cityService.getCityByName(urlDetail.getCityName());
             if (city == null) {
                 throw new ResourceNotAvailableException(ResourceType.CITY, ResourceTypeAction.GET);
             }
@@ -367,7 +355,7 @@ public class SeoPageService {
             centerLongitude = city.getCenterLongitude();
         }
         if (urlDetail.getBuilderId() != null) {
-            builder = builderService.getBuilderById(urlDetail.getBuilderId());
+            builder = responseInterceptor.getBuilderById(urlDetail.getBuilderId());//builderService.getBuilderById(urlDetail.getBuilderId());
             if (builder == null) {
                 throw new ResourceNotAvailableException(ResourceType.BUILDER, ResourceTypeAction.GET);
             }
