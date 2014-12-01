@@ -44,8 +44,8 @@ import com.proptiger.seo.repo.RedirectUrlMapDao;
 public class URLService {
     private String            EMPTY_URL = "";
     
-    @Autowired
-    private RedirectUrlMapDao redirectUrlMapDao;
+    /*@Autowired
+    private RedirectUrlMapDao redirectUrlMapDao;*/
 
     @Autowired
     private ResponseInterceptor responseInterceptor;
@@ -659,11 +659,11 @@ public class URLService {
         return urlDetail;
     }
 
-    @Deprecated
+    /*@Deprecated
     @Cacheable(value = Constants.CacheName.REDIRECT_URL_MAP)
     public RedirectUrlMap getRedirectUrlForOldUrl(String fromUrl) {
         return redirectUrlMapDao.findOne(fromUrl);
-    }
+    }*/
 
     public static class ValidURLResponse implements Serializable {
         /**

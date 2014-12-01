@@ -1,7 +1,10 @@
 package com.proptiger.seo.constants;
 
-public class URLGenerationConstants {
-    public static String       Selector                       = "selector=";
+import org.springframework.stereotype.Component;
+
+@Component
+public class URLSEOGenerationConstants {
+    public static String       Selector                       = "?selector=";
     public static String       SelectorGetProjectById        = "{\"filters\":{\"and\":[{\"equal\":{\"projectId\":%d}}]},\"fields\":[\"label\", \"city\", \"suburb\", \"id\",\"localityId\", \"projectId\", \"name\"]}";
     public static String       SelectorGetLocalityById        = "{\"filters\":{\"and\":[{\"equal\":{\"localityId\":%d}}]},\"fields\":[\"label\", \"city\", \"suburb\", \"id\",\"localityId\"]}";
     public static String       SelectorGetPropertyById        = "filters=propertyId==%d&fields=projectId,localityId,suburbId,cityId,propertyId,label,name,unitName,bedrooms";

@@ -25,7 +25,7 @@ import com.proptiger.core.util.HttpRequestUtil;
 import com.proptiger.core.util.PropertyKeys;
 import com.proptiger.core.util.PropertyReader;
 import com.proptiger.core.util.RequestHolderUtil;
-import com.proptiger.seo.constants.URLGenerationConstants;
+import com.proptiger.seo.constants.URLSEOGenerationConstants;
 
 @Aspect
 @Order(1)
@@ -38,7 +38,7 @@ public class ResponseInterceptor {
     private Gson            gson = new Gson();
 
     public Locality getLocalityById(int localityId) {
-        String buildParams = URLGenerationConstants.Selector + URLGenerationConstants.SelectorGetLocalityById;
+        String buildParams = URLSEOGenerationConstants.Selector + URLSEOGenerationConstants.SelectorGetLocalityById;
         buildParams = String.format(buildParams, localityId);
         URI uri = URI
                 .create(UriComponentsBuilder
@@ -52,7 +52,7 @@ public class ResponseInterceptor {
 
     public Locality getActiveInactiveLocality(int localityId) {
         String url = PropertyReader.getRequiredPropertyAsString(PropertyKeys.INACTIVE_LOCALITY_API_URL);
-        url = url.replace(URLGenerationConstants.idURLConstant, new StringBuffer(localityId));
+        url = url.replace(URLSEOGenerationConstants.idURLConstant, new StringBuffer(localityId));
 
         URI uri = URI.create(UriComponentsBuilder.fromUriString(getAPIUrl(url)).build().encode().toString());
         Locality locality = httpRequestUtil.getInternalApiResultAsTypeFromCache(uri, Locality.class);
@@ -62,7 +62,7 @@ public class ResponseInterceptor {
 
     public Suburb getSuburbById(int suburbId) {
         String url = PropertyReader.getRequiredPropertyAsString(PropertyKeys.SUBURB_API_URL);
-        url = url.replace(URLGenerationConstants.idURLConstant, new StringBuffer(suburbId));
+        url = url.replace(URLSEOGenerationConstants.idURLConstant, new StringBuffer(suburbId));
 
         URI uri = URI.create(UriComponentsBuilder.fromUriString(getAPIUrl(url)).build().encode().toString());
         Suburb suburb = httpRequestUtil.getInternalApiResultAsTypeFromCache(uri, Suburb.class);
@@ -72,7 +72,7 @@ public class ResponseInterceptor {
 
     public Suburb getActiveInactiveSuburb(int suburbId) {
         String url = PropertyReader.getRequiredPropertyAsString(PropertyKeys.INACTIVE_SUBURB_API_URL);
-        url = url.replace(URLGenerationConstants.idURLConstant, new StringBuffer(suburbId));
+        url = url.replace(URLSEOGenerationConstants.idURLConstant, new StringBuffer(suburbId));
 
         URI uri = URI.create(UriComponentsBuilder.fromUriString(getAPIUrl(url)).build().encode().toString());
         Suburb suburb = httpRequestUtil.getInternalApiResultAsTypeFromCache(uri, Suburb.class);
@@ -81,19 +81,20 @@ public class ResponseInterceptor {
     }
 
     public City getCityByName(String cityName) {
-        String buildParams = URLGenerationConstants.Selector + URLGenerationConstants.SelectorGetCityByName;
+        String buildParams = URLSEOGenerationConstants.Selector + URLSEOGenerationConstants.SelectorGetCityByName;
         buildParams = String.format(buildParams, cityName);
         URI uri = URI.create(UriComponentsBuilder
                 .fromUriString(
                         getAPIUrl(PropertyReader.getRequiredPropertyAsString(PropertyKeys.CITY_API_URL)) + buildParams)
                 .build().encode().toString());
+        System.out.println(uri.toString());
         City city = httpRequestUtil.getInternalApiResultAsTypeFromCache(uri, City.class);
 
         return city;
     }
 
     public City getCityById(int cityId) {
-        String buildParams = URLGenerationConstants.Selector + URLGenerationConstants.SelectorGetCityById;
+        String buildParams = URLSEOGenerationConstants.Selector + URLSEOGenerationConstants.SelectorGetCityById;
         buildParams = String.format(buildParams, cityId);
         URI uri = URI.create(UriComponentsBuilder
                 .fromUriString(
@@ -105,7 +106,7 @@ public class ResponseInterceptor {
     }
 
     public Project getProjectById(int projectId, Selector selector) {
-        Selector savedSelector = gson.fromJson(URLGenerationConstants.SelectorGetProjectById, Selector.class);
+        Selector savedSelector = gson.fromJson(URLSEOGenerationConstants.SelectorGetProjectById, Selector.class);
         if (selector != null && selector.getFields() != null) {
             if (savedSelector.getFields() == null) {
                 savedSelector.setFields(selector.getFields());
@@ -115,7 +116,7 @@ public class ResponseInterceptor {
             }
         }
 
-        String buildParams = URLGenerationConstants.Selector + gson.toJson(savedSelector);
+        String buildParams = URLSEOGenerationConstants.Selector + gson.toJson(savedSelector);
         buildParams = String.format(buildParams, projectId);
         URI uri = URI
                 .create(UriComponentsBuilder
@@ -128,7 +129,7 @@ public class ResponseInterceptor {
     }
 
     public Project getProjectById(int projectId) {
-        String buildParams = URLGenerationConstants.Selector + URLGenerationConstants.SelectorGetProjectById;
+        String buildParams = URLSEOGenerationConstants.Selector + URLSEOGenerationConstants.SelectorGetProjectById;
         buildParams = String.format(buildParams, projectId);
         URI uri = URI
                 .create(UriComponentsBuilder
@@ -142,7 +143,7 @@ public class ResponseInterceptor {
 
     public Project getActiveInactiveProject(int projectId) {
         String url = PropertyReader.getRequiredPropertyAsString(PropertyKeys.INACTIVE_PROJECT_API_URL);
-        url = url.replace(URLGenerationConstants.idURLConstant, new StringBuffer(projectId));
+        url = url.replace(URLSEOGenerationConstants.idURLConstant, new StringBuffer(projectId));
 
         URI uri = URI.create(UriComponentsBuilder.fromUriString(url).build().encode().toString());
         Project project = httpRequestUtil.getInternalApiResultAsTypeFromCache(uri, Project.class);
@@ -152,7 +153,7 @@ public class ResponseInterceptor {
 
     public Integer getProjectIdByDeletedPropertyId(int propertyId) {
         String url = PropertyReader.getRequiredPropertyAsString(PropertyKeys.DELETED_PROPERTY_API_URL);
-        url = url.replace(URLGenerationConstants.idURLConstant, new StringBuffer(propertyId));
+        url = url.replace(URLSEOGenerationConstants.idURLConstant, new StringBuffer(propertyId));
 
         URI uri = URI.create(UriComponentsBuilder.fromUriString(url).build().encode().toString());
         Integer projectId = httpRequestUtil.getInternalApiResultAsTypeFromCache(uri, Integer.class);
@@ -161,7 +162,7 @@ public class ResponseInterceptor {
     }
 
     public Property getPropertyById(int propertyId) {
-        String buildParams = URLGenerationConstants.Selector + URLGenerationConstants.SelectorGetPropertyById;
+        String buildParams = URLSEOGenerationConstants.Selector + URLSEOGenerationConstants.SelectorGetPropertyById;
         buildParams = String.format(buildParams, propertyId);
         URI uri = URI
                 .create(UriComponentsBuilder
@@ -174,7 +175,7 @@ public class ResponseInterceptor {
     }
 
     public PortfolioListing getPortfolioById(int portfolioId) {
-        String buildParams = URLGenerationConstants.RequestPortfolioById;
+        String buildParams = URLSEOGenerationConstants.RequestPortfolioById;
         buildParams = String.format(buildParams, portfolioId);
         URI uri = URI
                 .create(UriComponentsBuilder
@@ -197,7 +198,7 @@ public class ResponseInterceptor {
 
     public Image getImageById(long imageId) {
         String url = PropertyReader.getRequiredPropertyAsString(PropertyKeys.IMAGE_API_URL);
-        url = url.replace(URLGenerationConstants.idURLConstant, Long.toString(imageId));
+        url = url.replace(URLSEOGenerationConstants.idURLConstant, Long.toString(imageId));
 
         URI uri = URI.create(UriComponentsBuilder.fromUriString(url).build().encode().toString());
         Image image = httpRequestUtil.getInternalApiResultAsTypeFromCache(uri, Image.class);
@@ -206,7 +207,7 @@ public class ResponseInterceptor {
     }
 
     public Builder getBuilderById(int builderId) {
-        String buildParams = URLGenerationConstants.Selector + URLGenerationConstants.SelectorGetBuilderById;
+        String buildParams = URLSEOGenerationConstants.Selector + URLSEOGenerationConstants.SelectorGetBuilderById;
         buildParams = String.format(buildParams, builderId);
         URI uri = URI
                 .create(UriComponentsBuilder

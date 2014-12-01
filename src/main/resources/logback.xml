@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+
+	<appender name="seo"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/var/log/proptiger/seo/seo.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- daily rollover -->
+			<fileNamePattern>/var/log/proptiger/seo/seo-%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+			<!-- keep 30 days' worth of history -->
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+		<append>true</append>
+		<encoder>
+			<pattern>[%d{HH:mm:ss.SSS} %thread %-5level %C:%L] %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>[%d{HH:mm:ss.SSS} %thread %-5level %C:%L] %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="email-appender" class="ch.qos.logback.classic.net.SMTPAppender">
+		<to></to>
+		<from></from>
+		<subject>API Logs - Error while sending notification</subject>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>[%d{HH:mm:ss.SSS} %thread %-5level %C:%L] %msg%n</pattern>
+		</layout>
+	</appender>
+	
+	<logger name="org.springframework">
+		<level value="ERROR" />
+	</logger>
+	<logger name="org.hibernate">
+		<level value="DEBUG" />
+	</logger>
+	<logger name="org.apache.http">
+		<level value="ERROR" />
+	</logger>
+	<logger name="org.apache.shiro">
+		<level value="ERROR" />
+	</logger>
+	<root level="INFO">
+		<appender-ref ref="seo" />
+		<appender-ref ref="STDOUT" />
+	</root>
+
+</configuration>
