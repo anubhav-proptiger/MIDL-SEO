@@ -1,5 +1,7 @@
 package com.proptiger.seo.service;
 
+import static org.testng.AssertJUnit.assertEquals;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.Test;
 
