@@ -7,9 +7,6 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-
-import com.proptiger.data.util.PageType;
-
 /**
  * 
  *

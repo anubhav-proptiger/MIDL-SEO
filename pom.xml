@@ -5,7 +5,9 @@
   <version>0.0.1-SNAPSHOT</version>
   <packaging>war</packaging>
   	<properties>
-		<skipTests>true</skipTests>
+  		<spring.version>3.2.2.RELEASE</spring.version>
+  		<jdk.version>1.7</jdk.version>
+  		<skipTests>true</skipTests>
 	</properties>
 	<profiles>
 		<profile>
