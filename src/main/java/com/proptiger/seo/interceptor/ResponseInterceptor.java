@@ -273,7 +273,6 @@ public class ResponseInterceptor {
                         .build().encode().toString());
 
         HttpHeaders requestHeaders = new HttpHeaders();
-        //String jsessionId = "e2d56286-896a-4198-8572-5f1ce81523c8";
         String jsessionId = RequestHolderUtil.getJsessionIdFromRequestCookie();
         requestHeaders.add("Cookie", Constants.Security.COOKIE_NAME_JSESSIONID + "=" + jsessionId);
         

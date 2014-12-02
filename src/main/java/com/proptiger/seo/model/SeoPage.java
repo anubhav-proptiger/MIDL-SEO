@@ -45,7 +45,7 @@ public class SeoPage extends BaseModel {
                 "<bhk>", null, "bedroomsStr", "%s BHK"), PriceRange("<price range>", null, "priceRangeStr", "%s Lacs"), Bathrooms(
                 "<t>", null, "bathrooms", "%dT"), Sqft("<sq ft>", null, "size", "%d sq ft"), CityLatitude(
                 "<city latitude>", "city", "centerLatitude", "%f"), CityLongitude("<city longitude>", "city",
-                "centerLongitude", "%f"), ProjectLatitude("<project latitude>", "project", "longitude", "%f"), ProjectLongitude(
+                "centerLongitude", "%f"), ProjectLatitude("<project latitude>", "project", "latitude", "%f"), ProjectLongitude(
                 "<project longitude>", "project", "longitude", "%f"), ServerName("<server name>", null, "serverName",
                 "%s"), Url("<url>", null, "url", "%s"), ProjectImageUrl("<project image url>", "project", "imageURL",
                 "%s"), Page("<page>", null, "page", "Page %d"), ImageType("<image type>", null, "imageType", "%s");
