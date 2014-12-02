@@ -28,6 +28,7 @@ import com.proptiger.core.model.cms.Property;
 import com.proptiger.core.model.cms.Suburb;
 import com.proptiger.core.model.proptiger.Image;
 import com.proptiger.core.model.proptiger.PortfolioListing;
+import com.proptiger.core.model.user.portfolio.Portfolio;
 import com.proptiger.core.util.Constants;
 import com.proptiger.core.util.NullAwareBeanUtilsBean;
 import com.proptiger.seo.interceptor.ResponseInterceptor;
@@ -42,27 +43,29 @@ import com.proptiger.seo.repo.RedirectUrlMapDao;
  */
 @Service
 public class URLService {
-    private String            EMPTY_URL = "";
-    
-    /*@Autowired
-    private RedirectUrlMapDao redirectUrlMapDao;*/
+    private String              EMPTY_URL = "";
+
+    /*
+     * @Autowired private RedirectUrlMapDao redirectUrlMapDao;
+     */
 
     @Autowired
     private ResponseInterceptor responseInterceptor;
-    
-    private static Pattern PATTERN = Pattern.compile("^(?:.*)-(\\d+)(?:/[\\d+]{0,2}bhk(?:\\?\\d+-\\d+-lacs)?)?$");
+
+    private static Pattern      PATTERN   = Pattern
+                                                  .compile("^(?:.*)-(\\d+)(?:/[\\d+]{0,2}bhk(?:\\?\\d+-\\d+-lacs)?)?$");
 
     public ValidURLResponse getURLStatus(String url) {
         URLDetail urlDetail = null;
-        
-        //Removing trailing slace if any and maitaining a boolean flag
+
+        // Removing trailing slace if any and maitaining a boolean flag
         // to update the HttpStatus for 301.
         boolean hasTrailingSlace = false;
         if (url.endsWith("/")) {
-            url = url.substring(0, url.length()-1);
+            url = url.substring(0, url.length() - 1);
             hasTrailingSlace = true;
         }
-        
+
         /*
          * Removing the URL request params and saving them in variable.
          */
@@ -90,62 +93,61 @@ public class URLService {
         return validateUrl(urlDetail, hasTrailingSlace, URLRequestParamString);
     }
 
-	private PageType setNewUrlDetails(Integer objectId, Integer integer, URLDetail newUrlDetail) {
-		DomainObject domainObject = DomainObject.getDomainInstance(new Long(objectId));
-		if (domainObject.equals(DomainObject.property)) {
-			newUrlDetail.setPropertyId(objectId);
-			return PageType.PROPERTY_URLS;
-		}
-		
-		if (domainObject.equals(DomainObject.project)) {
-			newUrlDetail.setProjectId(objectId);
-			return PageType.PROJECT_URLS;
-		}
-		
-		if (domainObject.equals(DomainObject.locality) || domainObject.equals(DomainObject.suburb)) {
-			newUrlDetail.setLocalityId(objectId);
-			newUrlDetail.setOverviewType("overview");
-			return PageType.LOCALITY_SUBURB_OVERVIEW;
-		}
-		
-		if (domainObject.equals(DomainObject.city)) {
-			City city = null;
-			try {
-				city = responseInterceptor.getCityById(objectId);//cityService.getCity(objectId);
-			}
-			catch (Exception e) {
-				city = null;
-			}
-			if (city == null) {
-				return PageType.InvalidUrl;
-			}
-			newUrlDetail.setCityName(city.getLabel());
-			return PageType.CITY_URLS;
-		}
-		
-		if (domainObject.equals(DomainObject.builder)) {
-			newUrlDetail.setBuilderId(objectId);
-			return PageType.BUILDER_URLS;
-		}
-		return PageType.InvalidUrl;
-	}
+    private PageType setNewUrlDetails(Integer objectId, Integer integer, URLDetail newUrlDetail) {
+        DomainObject domainObject = DomainObject.getDomainInstance(new Long(objectId));
+        if (domainObject.equals(DomainObject.property)) {
+            newUrlDetail.setPropertyId(objectId);
+            return PageType.PROPERTY_URLS;
+        }
 
-	private Integer getObjectIdFromRedirectUrl(String url) {
-		if (url == null || url.isEmpty()) {
-			return null;
-		}
+        if (domainObject.equals(DomainObject.project)) {
+            newUrlDetail.setProjectId(objectId);
+            return PageType.PROJECT_URLS;
+        }
 
-		Matcher matcher = PATTERN.matcher(url);
-		if (matcher.find()) {
-			return new Integer(matcher.group(1));
-		}
+        if (domainObject.equals(DomainObject.locality) || domainObject.equals(DomainObject.suburb)) {
+            newUrlDetail.setLocalityId(objectId);
+            newUrlDetail.setOverviewType("overview");
+            return PageType.LOCALITY_SUBURB_OVERVIEW;
+        }
 
-		return null;
-	}
+        if (domainObject.equals(DomainObject.city)) {
+            City city = null;
+            try {
+                city = responseInterceptor.getCityById(objectId);// cityService.getCity(objectId);
+            }
+            catch (Exception e) {
+                city = null;
+            }
+            if (city == null) {
+                return PageType.InvalidUrl;
+            }
+            newUrlDetail.setCityName(city.getLabel());
+            return PageType.CITY_URLS;
+        }
 
-	private ValidURLResponse validateUrl(URLDetail urlDetail,
-			boolean hasTrailingSlace, String URLRequestParamString) {
-		PageType pageType = urlDetail.getPageType();
+        if (domainObject.equals(DomainObject.builder)) {
+            newUrlDetail.setBuilderId(objectId);
+            return PageType.BUILDER_URLS;
+        }
+        return PageType.InvalidUrl;
+    }
+
+    private Integer getObjectIdFromRedirectUrl(String url) {
+        if (url == null || url.isEmpty()) {
+            return null;
+        }
+
+        Matcher matcher = PATTERN.matcher(url);
+        if (matcher.find()) {
+            return new Integer(matcher.group(1));
+        }
+
+        return null;
+    }
+
+    private ValidURLResponse validateUrl(URLDetail urlDetail, boolean hasTrailingSlace, String URLRequestParamString) {
+        PageType pageType = urlDetail.getPageType();
         int responseStatus = HttpStatus.SC_OK;
         String redirectUrl = null, domainUrl = null;
 
@@ -171,9 +173,9 @@ public class URLService {
                 Property property = null;
                 try {
                     property = responseInterceptor.getPropertyById(urlDetail.getPropertyId());
-                    //propertyService.getPropertyFromSolr(urlDetail.getPropertyId());
+                    // propertyService.getPropertyFromSolr(urlDetail.getPropertyId());
                 }
-                catch (ResourceNotAvailableException e) {
+                catch (Exception e) {
                     property = null;
                 }
 
@@ -192,9 +194,9 @@ public class URLService {
                 Project project = null;
                 try {
                     project = responseInterceptor.getProjectById(urlDetail.getProjectId());
-                    //projectService.getProjectDataFromSolr(urlDetail.getProjectId());
+                    // projectService.getProjectDataFromSolr(urlDetail.getProjectId());
                 }
-                catch (ResourceNotAvailableException e) {
+                catch (Exception e) {
                     project = null;
                 }
 
@@ -215,18 +217,19 @@ public class URLService {
                 City builderCity = new City();
                 try {
                     builder = responseInterceptor.getBuilderById(urlDetail.getBuilderId());
-                    //builderService.getBuilderById(urlDetail.getBuilderId());
+                    // builderService.getBuilderById(urlDetail.getBuilderId());
                 }
-                catch (ResourceNotAvailableException e) {
+                catch (Exception e) {
                     builder = null;
                 }
                 try {
                     if (urlDetail.getCityName() != null && !urlDetail.getCityName().isEmpty()) {
                         builderCity = responseInterceptor.getCityByName(urlDetail.getCityName().replace("/", ""));
-                        //cityService.getCityByName(urlDetail.getCityName().replace("/", ""));
+                        // cityService.getCityByName(urlDetail.getCityName().replace("/",
+                        // ""));
                     }
                 }
-                catch (ResourceNotAvailableException e) {
+                catch (Exception e) {
                     builderCity = null;
                 }
 
@@ -247,9 +250,7 @@ public class URLService {
                     }
                 }
                 else {
-                    domainUrl = urlDetail.getPropertyType()
-                            + builder.getUrl()
-                            + urlDetail.getBedroomString();
+                    domainUrl = urlDetail.getPropertyType() + builder.getUrl() + urlDetail.getBedroomString();
                     if (builder.getBuilderCities() != null && builder.getBuilderCities().size() > 1) {
                         domainUrl = urlDetail.getCityName() + domainUrl;
                     }
@@ -310,9 +311,8 @@ public class URLService {
                     domainUrl = domainUrl.replaceFirst("property-sale-", "");
                     domainUrl = domainUrl.replaceFirst(cityName, cityName + "-real-estate");
                     if (urlDetail.getOverviewType() != null) {
-                        domainUrl = domainUrl.replaceFirst(
-                                urlDetail.getLocalityId() + "",
-                                urlDetail.getOverviewType()) + "-" + urlDetail.getLocalityId();
+                        domainUrl = domainUrl.replaceFirst(urlDetail.getLocalityId() + "", urlDetail.getOverviewType()) + "-"
+                                + urlDetail.getLocalityId();
                     }
                     else {
                         domainUrl = domainUrl + urlDetail.getAppendingString();
@@ -360,9 +360,9 @@ public class URLService {
                 City city = null;
                 try {
                     city = responseInterceptor.getCityByName(urlDetail.getCityName());
-                    //cityService.getCityByName(urlDetail.getCityName());
+                    // cityService.getCityByName(urlDetail.getCityName());
                 }
-                catch (ResourceNotAvailableException e) {
+                catch (Exception e) {
                     city = null;
                 }
                 if (city == null || hasTrailingSlace) {
@@ -371,70 +371,94 @@ public class URLService {
                 }
                 break;
             case IMAGE_PAGE_URL:
-            	responseStatus = HttpStatus.SC_MOVED_PERMANENTLY;
-            	URLDetail newUrlDetail = new URLDetail();
-    			PageType objectIdToPageType = setNewUrlDetails(urlDetail.getObjectId(), urlDetail.getObjectId(), newUrlDetail);
-    			newUrlDetail.setPageType(objectIdToPageType);
-    			newUrlDetail.setUrl("");
-    			
-    			ValidURLResponse urlResponse = validateUrl(newUrlDetail, false, "");
-    			String redirectionUrl = urlResponse.getRedirectUrl();
-    			Integer objectIdFromRedirectUrl = getObjectIdFromRedirectUrl(redirectionUrl);
-    			
-    			//If object-Id corresponds to city in the page_url, then HttpStatus for that city will
-    			//be either 200 or 301, if HttpStatus is 200 redirection url will be null else it will
-    			//be Empty. so in case of 301 HttpStatus city is either inactive or invalid and redirection
-    			//url be empty and nothing can be extracted from this, but in case of HttpStatus
-    			//200 city is active and hence directly assigning cityId to objectIdFromRedirectUrl as
-    			//redirection url will be null.
-    			if (objectIdToPageType.equals(PageType.CITY_URLS) && urlResponse.getHttpStatus() == HttpStatus.SC_OK) {
-    				objectIdFromRedirectUrl = urlDetail.getObjectId();
-    				urlResponse = new ValidURLResponse(HttpStatus.SC_MOVED_PERMANENTLY, "");
-    			}
-    			
-    			Image image = responseInterceptor.getImageById(urlDetail.getImageId());
-    			//imageService.getImage(urlDetail.getImageId());
-    			/*
-    			 * HttpStatus is 301, domain object is active and image is active then,
-    			 * either url will be same as image object page url or different.
-    			 * if both are same then HttpStatus will be 200 else 301 and redirection
-    			 * url will be image object page url.
-    			 */
-    			if (image != null && objectIdFromRedirectUrl != null 
-    					&& urlResponse.getHttpStatus() == HttpStatus.SC_MOVED_PERMANENTLY
-    					&& image.isActive()
-    					&& urlDetail.getObjectId().equals(objectIdFromRedirectUrl)) {
-    				if (image.getPageUrl().equals(urlDetail.getUrl())) {
-    					responseStatus = HttpStatus.SC_OK;
-    				} 
-    				else {
-    					redirectUrl = image.getPageUrl();
-    				}
-    			} 
-    			/*
-    			 * if Domain object id null or not null and not equal to object id
-    			 * and HttpStatus is 301 and image active/inactive then redirect url to urlResponse's redirection url 
-    			 */
-    			else if (image != null
-    					&& urlResponse.getHttpStatus() == HttpStatus.SC_MOVED_PERMANENTLY) {
-    				redirectUrl = urlResponse.getRedirectUrl();
-    			}
-    			/*
-    			 * HttpStatus is 404 or image is null
-    			 */
-    			else {
-    				responseStatus = HttpStatus.SC_NOT_FOUND;
-    			}
-            	break;
+                responseStatus = HttpStatus.SC_MOVED_PERMANENTLY;
+                URLDetail newUrlDetail = new URLDetail();
+                PageType objectIdToPageType = setNewUrlDetails(
+                        urlDetail.getObjectId(),
+                        urlDetail.getObjectId(),
+                        newUrlDetail);
+                newUrlDetail.setPageType(objectIdToPageType);
+                newUrlDetail.setUrl("");
+
+                ValidURLResponse urlResponse = validateUrl(newUrlDetail, false, "");
+                String redirectionUrl = urlResponse.getRedirectUrl();
+                Integer objectIdFromRedirectUrl = getObjectIdFromRedirectUrl(redirectionUrl);
+
+                // If object-Id corresponds to city in the page_url, then
+                // HttpStatus for that city will
+                // be either 200 or 301, if HttpStatus is 200 redirection url
+                // will be null else it will
+                // be Empty. so in case of 301 HttpStatus city is either
+                // inactive or invalid and redirection
+                // url be empty and nothing can be extracted from this, but in
+                // case of HttpStatus
+                // 200 city is active and hence directly assigning cityId to
+                // objectIdFromRedirectUrl as
+                // redirection url will be null.
+                if (objectIdToPageType.equals(PageType.CITY_URLS) && urlResponse.getHttpStatus() == HttpStatus.SC_OK) {
+                    objectIdFromRedirectUrl = urlDetail.getObjectId();
+                    urlResponse = new ValidURLResponse(HttpStatus.SC_MOVED_PERMANENTLY, "");
+                }
+
+                Image image = null;
+                try {
+                    image = responseInterceptor.getImageById(urlDetail.getImageId());
+                }
+                catch (Exception e) {
+                    // TODO: handle exception
+                }
+
+                // imageService.getImage(urlDetail.getImageId());
+                /*
+                 * HttpStatus is 301, domain object is active and image is
+                 * active then, either url will be same as image object page url
+                 * or different. if both are same then HttpStatus will be 200
+                 * else 301 and redirection url will be image object page url.
+                 */
+                if (image != null && objectIdFromRedirectUrl != null
+                        && urlResponse.getHttpStatus() == HttpStatus.SC_MOVED_PERMANENTLY
+                        && image.isActive()
+                        && urlDetail.getObjectId().equals(objectIdFromRedirectUrl)) {
+                    if (image.getPageUrl().equals(urlDetail.getUrl())) {
+                        responseStatus = HttpStatus.SC_OK;
+                    }
+                    else {
+                        redirectUrl = image.getPageUrl();
+                    }
+                }
+                /*
+                 * if Domain object id null or not null and not equal to object
+                 * id and HttpStatus is 301 and image active/inactive then
+                 * redirect url to urlResponse's redirection url
+                 */
+                else if (image != null && urlResponse.getHttpStatus() == HttpStatus.SC_MOVED_PERMANENTLY) {
+                    redirectUrl = urlResponse.getRedirectUrl();
+                }
+                /*
+                 * HttpStatus is 404 or image is null
+                 */
+                else {
+                    responseStatus = HttpStatus.SC_NOT_FOUND;
+                }
+                break;
             case STATIC_URLS:
             case DIWALI_MELA_URL:
                 responseStatus = HttpStatus.SC_OK;
                 break;
             case PORTFOLIO_URLS:
+                System.out.println("portfolio urls");
                 if (urlDetail.getPortfolioId() != null) {
-                    PortfolioListing portfolioListing = responseInterceptor.getPortfolioById(urlDetail.getPortfolioId());
-                    //portfolioService.getActivePortfolioOnId(urlDetail.getPortfolioId());
-                    if (portfolioListing == null) {
+                    Portfolio portfolio = null;
+                    try {
+                        portfolio = responseInterceptor.getPortfolioById(urlDetail.getPortfolioId());
+                    }
+                    catch (Exception e) {
+
+                    }
+                    // portfolioService.getActivePortfolioOnId(urlDetail.getPortfolioId());
+                    if (portfolio == null || portfolio.getListings() == null
+                            || portfolio.getListings().isEmpty()
+                            || !portfolio.getListings().contains(urlDetail.getPortfolioId())) {
                         responseStatus = HttpStatus.SC_NOT_FOUND;
                     }
                 }
@@ -443,9 +467,9 @@ public class URLService {
                 if (urlDetail.getCityName() != null && !urlDetail.getCityName().isEmpty()) {
                     city = null;
                     try {
-                        city = responseInterceptor.getCityByName(urlDetail.getCityName());//cityService.getCityByName(urlDetail.getCityName());
+                        city = responseInterceptor.getCityByName(urlDetail.getCityName());// cityService.getCityByName(urlDetail.getCityName());
                     }
-                    catch (ResourceNotAvailableException e) {
+                    catch (Exception e) {
                         city = null;
                     }
                     if (city == null) {
@@ -471,7 +495,7 @@ public class URLService {
         Integer cityId = null;
         if (domainType.equals(DomainObject.property.getText())) {
             projectId = responseInterceptor.getProjectIdByDeletedPropertyId(id);
-            //projectService.getProjectIdForPropertyId(id);
+            // projectService.getProjectIdForPropertyId(id);
             if (projectId == null) {
                 return EMPTY_URL;
             }
@@ -483,7 +507,7 @@ public class URLService {
             if (projectId != null) {
                 try {
                     project = responseInterceptor.getProjectById(projectId);
-                    //projectService.getProjectData(projectId);
+                    // projectService.getProjectData(projectId);
                     return project.getURL();
                 }
                 catch (ResourceNotAvailableException | NullPointerException e) {
@@ -491,7 +515,7 @@ public class URLService {
                 }
             }
             project = responseInterceptor.getActiveInactiveProject(id);
-            //projectService.getActiveOrInactiveProjectById(id);
+            // projectService.getActiveOrInactiveProjectById(id);
             if (project == null) {
                 return EMPTY_URL;
             }
@@ -506,7 +530,7 @@ public class URLService {
             if (localityId != null) {
                 try {
                     locality = responseInterceptor.getLocalityById(localityId);
-                    //localityService.getLocality(localityId);
+                    // localityService.getLocality(localityId);
                     return locality.getUrl();
                 }
                 catch (ResourceNotAvailableException | NullPointerException e) {
@@ -515,7 +539,7 @@ public class URLService {
             }
             else {
                 locality = responseInterceptor.getActiveInactiveLocality(id);
-                //localityService.getActiveOrInactiveLocalityById(id);
+                // localityService.getActiveOrInactiveLocalityById(id);
                 if (locality == null) {
                     return EMPTY_URL;
                 }
@@ -532,7 +556,7 @@ public class URLService {
             if (suburbId != null) {
                 try {
                     suburb = responseInterceptor.getSuburbById(suburbId);
-                    //suburbService.getSuburb(suburbId);
+                    // suburbService.getSuburb(suburbId);
                     return suburb.getUrl();
                 }
                 catch (ResourceNotAvailableException | NullPointerException e) {
@@ -541,7 +565,7 @@ public class URLService {
             }
             else {
                 suburb = responseInterceptor.getActiveInactiveSuburb(id);
-                //suburbService.getActiveOrInactiveSuburbById(id);
+                // suburbService.getActiveOrInactiveSuburbById(id);
                 if (suburb == null) {
                     return EMPTY_URL;
                 }
@@ -557,7 +581,7 @@ public class URLService {
             if (cityId != null) {
                 try {
                     city = responseInterceptor.getCityById(cityId);
-                    //cityService.getCity(cityId);
+                    // cityService.getCity(cityId);
                     return city.getUrl();
                 }
                 catch (ResourceNotAvailableException | NullPointerException e) {
@@ -578,7 +602,7 @@ public class URLService {
                 Locality locality = null;
                 try {
                     locality = responseInterceptor.getLocalityById(urlDetail.getLocalityId());
-                    //localityService.getLocality(urlDetail.getLocalityId());
+                    // localityService.getLocality(urlDetail.getLocalityId());
                 }
                 catch (ResourceNotAvailableException e) {
                     locality = null;
@@ -599,7 +623,7 @@ public class URLService {
                 Suburb suburb = null;
                 try {
                     suburb = responseInterceptor.getSuburbById(urlDetail.getLocalityId());
-                    //suburbService.getSuburbById(urlDetail.getLocalityId());
+                    // suburbService.getSuburbById(urlDetail.getLocalityId());
                 }
                 catch (ResourceNotAvailableException e) {
                     suburb = null;
@@ -659,11 +683,13 @@ public class URLService {
         return urlDetail;
     }
 
-    /*@Deprecated
-    @Cacheable(value = Constants.CacheName.REDIRECT_URL_MAP)
-    public RedirectUrlMap getRedirectUrlForOldUrl(String fromUrl) {
-        return redirectUrlMapDao.findOne(fromUrl);
-    }*/
+    /*
+     * @Deprecated
+     * 
+     * @Cacheable(value = Constants.CacheName.REDIRECT_URL_MAP) public
+     * RedirectUrlMap getRedirectUrlForOldUrl(String fromUrl) { return
+     * redirectUrlMapDao.findOne(fromUrl); }
+     */
 
     public static class ValidURLResponse implements Serializable {
         /**
