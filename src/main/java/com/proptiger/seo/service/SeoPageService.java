@@ -213,16 +213,16 @@ public class SeoPageService {
     }
 
     private void setSeoTemplate(SeoPage seopage, Map<String, String> mappings, URLDetail urlDetail) {
-        seopage.setTitle(replace(seopage.getTitle(), mappings, urlDetail));
-        seopage.setDescription(replace(seopage.getDescription(), mappings, urlDetail));
-        seopage.setKeywords(replace(seopage.getKeywords(), mappings, urlDetail));
-        seopage.setH1(replace(seopage.getH1(), mappings, urlDetail));
-        seopage.setH2(replace(seopage.getH2(), mappings, urlDetail));
-        seopage.setH3(replace(seopage.getH3(), mappings, urlDetail));
-        seopage.setH4(replace(seopage.getH4(), mappings, urlDetail));
+        seopage.setTitle(replace(seopage.getTitle(), mappings, urlDetail).trim());
+        seopage.setDescription(replace(seopage.getDescription(), mappings, urlDetail).trim());
+        seopage.setKeywords(replace(seopage.getKeywords(), mappings, urlDetail).trim());
+        seopage.setH1(replace(seopage.getH1(), mappings, urlDetail).trim());
+        seopage.setH2(replace(seopage.getH2(), mappings, urlDetail).trim());
+        seopage.setH3(replace(seopage.getH3(), mappings, urlDetail).trim());
+        seopage.setH4(replace(seopage.getH4(), mappings, urlDetail).trim());
         if (seopage.getOtherParams() != null) {
             for(String key : seopage.getOtherParams().keySet()) {
-                seopage.getOtherParams().put(key, replace(seopage.getOtherParams().get(key), mappings, urlDetail));
+                seopage.getOtherParams().put(key, replace(seopage.getOtherParams().get(key), mappings, urlDetail).trim());
             }
         }
     }
