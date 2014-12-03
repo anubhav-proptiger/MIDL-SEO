@@ -346,8 +346,15 @@ public class SeoPageService {
             }
             city = suburb.getCity();
         }
-        if (urlDetail.getCityName() != null) {
-            city = responseInterceptor.getCityByName(urlDetail.getCityName());//cityService.getCityByName(urlDetail.getCityName());
+        if (urlDetail.getCityName() != null || urlDetail.getCityId() != null) {
+            
+            if(urlDetail.getCityName() != null){
+                city = responseInterceptor.getCityByName(urlDetail.getCityName());//cityService.getCityByName(urlDetail.getCityName());
+            }
+            else{
+                city = responseInterceptor.getCityById(urlDetail.getCityId());//cityService.getCityByName(urlDetail.getCityName());
+            }
+            
             if (city == null) {
                 throw new ResourceNotAvailableException(ResourceType.CITY, ResourceTypeAction.GET);
             }

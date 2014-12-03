@@ -29,7 +29,7 @@ public enum PageType {
     STATIC_URLS("^(?:all-builders|google_page_12.php|google_page_13.php|google_page_14.php|google_page_15.php|google_page_4.php|google_page_8.php|all-cities|compare|all-projects|news|contactus|aboutus|nri|vaastu|homeloan|documents|faqs|builderpartner|ourservices|management-team|proptiger-media|privacy-policy|user-agreement|careers|sitemap.php|testimonials|emi|disclaimer|404|server-error|sites-plots-sale|projects-in-india|apartments-in-india|flats-in-india|property-in-india|new-launch-projects-in-india|ongoing-projects-in-india|completed-projects-in-india|new-projects-for-sale-in-india|upcoming-flats-for-sale-in-india|ready-to-move-flats-in-india|resale-apartments-in-india|new-apartments-for-sale-in-india|((apartments-flats-sale|property-sale|villas-sale)(/[\\d]{1,2}bhk)?))|mobile-apps$", new String[]{}),
     PORTFOLIO_URLS("^portfolio/(?:index|dashboard|enquiredproperty|savedsearches|recentlyviewed|myfavorites|property/([\\d]+))$", new String[]{"portfolioId"}),
     NEWS_URLS("^(?:news|blog)(?:/category/([\\w]+)|(?:/category/(?:real-estate|home-loan|real-estate-news|real-estate-tips|interior-decorating-design|home-loans))|/(?:[\\w]+(?:\\-[\\w]+)*)|/(?:\\?p=(\\d+)))?/?$",new String[] {"cityName"}),
-    DIWALI_MELA_URL("^mega-property-sale(.*)", new String[]{}),
+    DIWALI_MELA_URL("^(mega-property-sale|transaction|google_gosf)(.*)?$", new String[]{}),
     InvalidUrl("(.*)", new String[]{"URL"});
 
     private String   regex;
