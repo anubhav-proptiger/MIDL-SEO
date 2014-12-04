@@ -275,14 +275,11 @@ public class ResponseInterceptor {
         HttpHeaders requestHeaders = new HttpHeaders();
         String jsessionId = RequestHolderUtil.getJsessionIdFromRequestCookie();
         requestHeaders.add("Cookie", Constants.Security.COOKIE_NAME_JSESSIONID + "=" + jsessionId);
-        
+
         Portfolio portfolio = null;
         try {
-            portfolio = httpRequestUtil.getInternalApiResultAsTypeFromCache(
-                    uri,
-                    requestHeaders,
-                    Portfolio.class);
-            
+            portfolio = httpRequestUtil.getInternalApiResultAsTypeFromCache(uri, requestHeaders, Portfolio.class);
+
         }
         catch (Exception e) {
             // TODO Auto-generated catch block
@@ -311,25 +308,19 @@ public class ResponseInterceptor {
     }
 
     public Builder getBuilderById(int builderId) {
-        String buildParams = URLSEOGenerationConstants.Selector + URLSEOGenerationConstants.SelectorGetBuilderById;
-        buildParams = String.format(buildParams, builderId);
-        URI uri = URI
-                .create(UriComponentsBuilder
-                        .fromUriString(
-                                getAPIUrl(PropertyReader.getRequiredPropertyAsString(PropertyKeys.BUILDER_API_URL)) + buildParams)
-                        .build().encode().toString());
-        List<Builder> builders = null;
+        String url = PropertyReader.getRequiredPropertyAsString(PropertyKeys.BUILDER_API_URL);
+        url = url.replace(URLSEOGenerationConstants.idURLConstant, Long.toString(builderId)) + URLSEOGenerationConstants.SelectorGetBuilderById;
+        URI uri = URI.create(UriComponentsBuilder.fromUriString(getAPIUrl(url)).build().encode().toString());
+        Builder builder = null;
         try {
-            builders = httpRequestUtil.getInternalApiResultAsTypeListFromCache(uri, Builder.class);
+            builder = httpRequestUtil.getInternalApiResultAsTypeFromCache(uri, Builder.class);
         }
         catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        if (builders == null || builders.isEmpty()) {
-            return null;
-        }
-        return builders.get(0);
+
+        return builder;
     }
 
     private Object getApiResponseData(Object retVal) {

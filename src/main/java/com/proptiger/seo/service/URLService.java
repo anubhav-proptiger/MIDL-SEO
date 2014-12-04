@@ -215,6 +215,11 @@ public class URLService {
                 responseStatus = HttpStatus.SC_MOVED_PERMANENTLY;
                 Builder builder = null;
                 City builderCity = new City();
+                
+                String builderUrlCityName = urlDetail.getCityName();
+                if(builderUrlCityName != null){
+                    builderUrlCityName = builderUrlCityName.replace("/", "");
+                }
                 try {
                     builder = responseInterceptor.getBuilderById(urlDetail.getBuilderId());
                     // builderService.getBuilderById(urlDetail.getBuilderId());
@@ -223,8 +228,8 @@ public class URLService {
                     builder = null;
                 }
                 try {
-                    if (urlDetail.getCityName() != null && !urlDetail.getCityName().isEmpty()) {
-                        builderCity = responseInterceptor.getCityByName(urlDetail.getCityName().replace("/", ""));
+                    if (builderUrlCityName != null && !builderUrlCityName.isEmpty()) {
+                        builderCity = responseInterceptor.getCityByName(builderUrlCityName);
                         // cityService.getCityByName(urlDetail.getCityName().replace("/",
                         // ""));
                     }
@@ -235,7 +240,7 @@ public class URLService {
 
                 if (builder == null || builderCity == null) {
                     if (builderCity != null) {
-                        if (urlDetail.getCityName() != null && !urlDetail.getCityName().isEmpty()) {
+                        if (builderUrlCityName != null && !builderUrlCityName.isEmpty()) {
                             redirectUrl = builderCity.getUrl();
                         }
                         else {
@@ -251,8 +256,15 @@ public class URLService {
                 }
                 else {
                     domainUrl = urlDetail.getPropertyType() + builder.getUrl() + urlDetail.getBedroomString();
-                    if (builder.getBuilderCities() != null && builder.getBuilderCities().size() > 1) {
-                        domainUrl = urlDetail.getCityName() + domainUrl;
+                    List<String> builderCities = builder.getBuilderCities();
+                    if (builderCities != null && builderCities.size()>1) {
+                        for(String builderCityName:builderCities){
+                            if( builderCityName.equalsIgnoreCase(builderUrlCityName) ){
+                                domainUrl = builderUrlCityName.toLowerCase() + "/" + domainUrl;
+                                break;
+                            }
+                        }
+                        
                     }
                     if (!domainUrl.equals(urlDetail.getUrl()) || hasTrailingSlace) {
                         redirectUrl = domainUrl;
