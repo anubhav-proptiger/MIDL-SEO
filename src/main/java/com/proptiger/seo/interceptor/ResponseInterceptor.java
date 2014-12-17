@@ -13,6 +13,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.google.gson.Gson;
 import com.proptiger.core.model.cms.Builder;
 import com.proptiger.core.model.cms.City;
+import com.proptiger.core.model.cms.LandMark;
 import com.proptiger.core.model.cms.Locality;
 import com.proptiger.core.model.cms.Project;
 import com.proptiger.core.model.cms.Property;
@@ -337,4 +338,21 @@ public class ResponseInterceptor {
     private String getAPIUrl(String url) {
         return PropertyReader.getRequiredPropertyAsString(PropertyKeys.PROPTIGER_URL) + url;
     }
+
+	public LandMark getLandMarkById(Integer landMarkId) {
+		String url = PropertyReader.getRequiredPropertyAsString(PropertyKeys.LANDMARK_API_URL);
+		url = url.replace(URLSEOGenerationConstants.idURLConstant,Integer.toString(landMarkId));
+
+		URI uri = URI.create(UriComponentsBuilder.fromUriString(getAPIUrl(url))
+				.build().encode().toString());
+		LandMark landMark = null;
+		try {
+			landMark = httpRequestUtil.getInternalApiResultAsTypeFromCache(uri,LandMark.class);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return landMark;
+	}
 }
