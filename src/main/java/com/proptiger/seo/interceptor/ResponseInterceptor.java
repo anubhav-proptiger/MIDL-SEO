@@ -341,7 +341,9 @@ public class ResponseInterceptor {
 
 	public LandMark getLandMarkById(Integer landMarkId) {
 		String url = PropertyReader.getRequiredPropertyAsString(PropertyKeys.LANDMARK_API_URL);
-		url = url.replace(URLSEOGenerationConstants.idURLConstant,Integer.toString(landMarkId));
+		url = url.replace(URLSEOGenerationConstants.idURLConstant,Integer.toString(landMarkId)) 
+				+ URLSEOGenerationConstants.Selector
+				+ URLSEOGenerationConstants.SelectorGetLandMarkById;
 
 		URI uri = URI.create(UriComponentsBuilder.fromUriString(getAPIUrl(url))
 				.build().encode().toString());
