@@ -15,11 +15,12 @@ import com.proptiger.data.service.BuilderService;
 import com.proptiger.seo.service.URLCreaterService;
 import com.proptiger.seo.model.SeoURLs;
 import com.proptiger.seo.model.URLCategories;
+import com.proptiger.seo.model.URLDetail;
 import com.proptiger.seo.service.SeoURLService;
 
 @Service
 public class SeoEventUrlCreator {
-    /*@Autowired
+    @Autowired
     private URLCreaterService urlCreaterService;
 
     @Autowired
@@ -146,12 +147,12 @@ public class SeoEventUrlCreator {
         return totalUrls;
     }
     
-    *//**
+    /**
      * Adding the city builder urls.
      * @param eventGenerated
      * @param urlCategories
      * @return
-     *//*
+     */
     public int generateBuilderUrls(EventGenerated eventGenerated, List<URLCategories> urlCategories) {
         URLDetail urlDetail = new URLDetail();
         String url = null;
@@ -167,5 +168,5 @@ public class SeoEventUrlCreator {
         }
         seoURLService.saveDomainUrls(seoURLs, eventGenerated);
         return totalUrls;
-    }*/
+    }
 }

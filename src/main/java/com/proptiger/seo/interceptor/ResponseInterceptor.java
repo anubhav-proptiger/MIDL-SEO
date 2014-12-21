@@ -59,6 +59,26 @@ public class ResponseInterceptor {
         }
         return localities.get(0);
     }
+    
+    public List<Locality> getAllLocalities() {
+        String buildParams = URLSEOGenerationConstants.Selector + URLSEOGenerationConstants.SelectorGetAllLocalities;
+        URI uri = URI
+                .create(UriComponentsBuilder
+                        .fromUriString(
+                                getAPIUrl(PropertyReader.getRequiredPropertyAsString(PropertyKeys.ALL_LOCALITY_API_URL)) + buildParams)
+                        .build().encode().toString());
+        List<Locality> localities = null;
+        try {
+            localities = httpRequestUtil.getInternalApiResultAsTypeListFromCache(uri, Locality.class);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (localities == null || localities.isEmpty()) {
+            return null;
+        }
+        return localities;
+    }
 
     public Locality getActiveInactiveLocality(int localityId) {
         String url = PropertyReader.getRequiredPropertyAsString(PropertyKeys.INACTIVE_LOCALITY_API_URL);
@@ -91,6 +111,22 @@ public class ResponseInterceptor {
         }
 
         return suburb;
+    }
+    
+    public List<Suburb> getAllSuburbs() {
+        String buildParams = URLSEOGenerationConstants.Selector + URLSEOGenerationConstants.SelectorGetAllSuburb;
+        String url = PropertyReader.getRequiredPropertyAsString(PropertyKeys.ALL_SUBURB_API_URL) + buildParams;
+        
+        URI uri = URI.create(UriComponentsBuilder.fromUriString(getAPIUrl(url)).build().encode().toString());
+        List<Suburb> suburbs = null;
+        try {
+            suburbs = httpRequestUtil.getInternalApiResultAsTypeListFromCache(uri, Suburb.class);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return suburbs;
     }
 
     public Suburb getActiveInactiveSuburb(int suburbId) {
@@ -151,6 +187,26 @@ public class ResponseInterceptor {
             return null;
         }
         return cities.get(0);
+    }
+    
+    public List<City> getAllCities() {
+        String buildParams = URLSEOGenerationConstants.Selector + URLSEOGenerationConstants.SelectorGetAllCities;
+        URI uri = URI.create(UriComponentsBuilder
+                .fromUriString(
+                        getAPIUrl(PropertyReader.getRequiredPropertyAsString(PropertyKeys.ALL_CITY_API_URL)) + buildParams)
+                .build().encode().toString());
+        List<City> cities = null;
+        try {
+            cities = httpRequestUtil.getInternalApiResultAsTypeListFromCache(uri, City.class);
+        }
+        catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        if (cities == null || cities.isEmpty()) {
+            return null;
+        }
+        return cities;
     }
 
     public Project getProjectById(int projectId, Selector selector) {
@@ -321,6 +377,22 @@ public class ResponseInterceptor {
         }
 
         return builder;
+    }
+    
+    public List<Builder> getAllBuilders() {
+        String buildParams = URLSEOGenerationConstants.Selector + URLSEOGenerationConstants.SelectorGetAllBuilders;
+        String url = PropertyReader.getRequiredPropertyAsString(PropertyKeys.ALL_BUILDER_API_URL) + buildParams;
+        URI uri = URI.create(UriComponentsBuilder.fromUriString(getAPIUrl(url)).build().encode().toString());
+        List<Builder> builders = null;
+        try {
+            builders = httpRequestUtil.getInternalApiResultAsTypeList(uri, Builder.class);
+        }
+        catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return builders;
     }
 
     private Object getApiResponseData(Object retVal) {

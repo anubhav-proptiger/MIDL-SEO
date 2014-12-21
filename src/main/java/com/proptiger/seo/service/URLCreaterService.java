@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.proptiger.core.init.RequestResponseInterceptor;
 import com.proptiger.core.model.cms.Builder;
 import com.proptiger.core.model.cms.City;
 import com.proptiger.core.model.cms.Locality;
@@ -15,10 +16,12 @@ import com.proptiger.core.pojo.Selector;
 import com.proptiger.core.pojo.response.PaginatedResponse;
 //import com.proptiger.data.model.URLDetail;
 import com.proptiger.core.util.Caching;
-import com.proptiger.data.util.Serializer;
+//import com.proptiger.data.util.Serializer;
 import com.proptiger.seo.enums.PropertyType;
 import com.proptiger.seo.enums.TaxonomyPropertyTypes;
 import com.proptiger.seo.enums.URLTypeCategories;
+import com.proptiger.seo.interceptor.ResponseInterceptor;
+import com.proptiger.seo.model.URLDetail;
 import com.proptiger.seo.model.URLPropertyTypeCategory;
 import com.proptiger.seo.model.URLPropertyTypes;
 
@@ -29,22 +32,7 @@ public class URLCreaterService {
     private Caching         caching;
 
     @Autowired
-    private LocalityService localityService;
-
-    @Autowired
-    private SuburbService   suburbService;
-
-    @Autowired
-    private CityService     cityService;
-
-    @Autowired
-    private ProjectService  projectService;
-
-    @Autowired
-    private PropertyService propertyService;
-
-    @Autowired
-    private BuilderService  builderService;
+    private ResponseInterceptor responseInterceptor;
 
     private final String    bhkSuffix    = "bhk";
 
@@ -542,31 +530,10 @@ public class URLCreaterService {
             return currentProperty;
         }
         
-        currentProperty = propertyService.getPropertyFromSolr(id);
+        currentProperty = responseInterceptor.getPropertyById(id);
+        //propertyService.getPropertyFromSolr(id);
         caching.saveResponse(cacheKey, currentProperty);
         
-        int start = 0, rows = 5000, size;
-        List<Property> properties = null;
-        do {
-            properties = getAllProperties(start, rows);
-            if (properties == null) {
-                break;
-            }
-            size = properties.size();
-            start = start + size;
-
-            for (Property property : properties) {
-                cacheKey = propertyKeyIdPrefix + property.getPropertyId();
-                caching.saveResponse(cacheKey, property);
-                if (property.getProjectId() == id) {
-                    currentProperty = property;
-                }
-            }
-            properties.clear();
-            System.gc();
-        }
-        while (size > 0);
-
         return currentProperty;
     }
 
@@ -585,29 +552,10 @@ public class URLCreaterService {
             return currentProject;
         }
         
-        currentProject = projectService.getProjectDataFromSolr(id);
+        currentProject = responseInterceptor.getProjectById(id);
+        //projectService.getProjectDataFromSolr(id);
         caching.saveResponse(cacheKey, currentProject);
-        int start = 0, rows = 5000, size = 0;
-        List<Project> projects = null;
-        do {
-            projects = getAllProjects(start, rows);
-            System.out.println("called");
-            if (projects == null) {
-                break;
-            }
-            size = projects.size();
-            start = start + size;
-            for (Project project : projects) {
-                cacheKey = projectKeyIdPrefix + project.getProjectId();
-                caching.saveResponse(cacheKey, project);
-                if (project.getProjectId() == id) {
-                    currentProject = project;
-                }
-            }
-            projects.clear();
-        }
-        while (size > 0);
-
+        
         return currentProject;
     }
 
@@ -744,35 +692,36 @@ public class URLCreaterService {
 
     private List<Locality> getAllLocalities() {
         String selectorString = "{\"fields\":[\"localityId\", \"label\", \"city\"], \"paging\":{\"start\":0, \"rows\":100000}}";
-        PaginatedResponse<List<Locality>> localities = localityService.getLocalities(Serializer.fromJson(
-                selectorString,
-                Selector.class));
+        List<Locality> localities = responseInterceptor.getAllLocalities(); 
+        //localityService.getLocalities(Serializer.fromJson( selectorString, Selector.class));
 
-        return localities.getResults();
+        return localities;
     }
 
     private List<Suburb> getAllSuburbs() {
         String selectorString = "{\"fields\":[\"id\", \"label\", \"city\"], \"paging\":{\"start\":0, \"rows\":100000}}";
-        List<Suburb> suburbs = suburbService.getSuburbs(Serializer.fromJson(selectorString, Selector.class));
+        List<Suburb> suburbs = responseInterceptor.getAllSuburbs();
+        //suburbService.getSuburbs(Serializer.fromJson(selectorString, Selector.class));
 
         return suburbs;
     }
 
     private List<City> getAllCities() {
-        String selectorString = "{\"fields\":[\"id\", \"label\"], \"paging\":{\"start\":0, \"rows\":100000}}";
-        List<City> cities = cityService.getCityList(Serializer.fromJson(selectorString, Selector.class));
+        //String selectorString = "{\"fields\":[\"id\", \"label\"], \"paging\":{\"start\":0, \"rows\":100000}}";
+        List<City> cities = responseInterceptor.getAllCities();
 
         return cities;
     }
 
     private List<Builder> getAllBuilders() {
-        String selectorString = "{\"fields\":[\"id\", \"label\", \"builderCities\"], \"paging\":{\"start\":0, \"rows\":100000}}";
-        List<Builder> builders = builderService.getBuilders(Serializer.fromJson(selectorString, Selector.class));
+        //String selectorString = "{\"fields\":[\"id\", \"label\", \"builderCities\"], \"paging\":{\"start\":0, \"rows\":100000}}";
+        List<Builder> builders = responseInterceptor.getAllBuilders(); 
+        		//builderService.getBuilders(Serializer.fromJson(selectorString, Selector.class));
 
         return builders;
     }
     
-    private List<Project> getAllProjects(int start, int rows) {
+    /*private List<Project> getAllProjects(int start, int rows) {
 
         String selectorString = "{\"fields\":[\"projectId\", \"name\", \"locality\", \"city\", \"builderLabel\"], \"paging\":{\"start\":" + start
                 + ", \"rows\":"
@@ -798,5 +747,5 @@ public class URLCreaterService {
         return properties;
 
     }
-
+*/
 }
