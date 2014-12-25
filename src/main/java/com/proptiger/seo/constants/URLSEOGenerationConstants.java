@@ -4,7 +4,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class URLSEOGenerationConstants {
-    public static String Selector                       = "?selector=";
+	public static String QuestionMark                   = "?";
+    public static String Selector                       = QuestionMark+"selector=";
     public static String SelectorGetProjectById         = "{\"filters\":{\"and\":[{\"equal\":{\"projectId\":%d}}]},"
             + "\"fields\":[\"label\", \"city\", \"suburb\", \"locality\", \"builder\", \"id\",\"localityId\", "
             + "\"projectId\", \"name\", \"URL\", \"latitude\", \"longitude\",\"distinctBedrooms\",\"imageURL\","
@@ -24,4 +25,6 @@ public class URLSEOGenerationConstants {
     public static String SelectorGetAllCities           = "{\"fields\":[\"id\",\"label\",\"url\", \"centerLatitude\", \"centerLongitude\"], \"paging\":{\"start\":0, \"rows\":100000}}";
     public static String RequestPortfolioById           = "listingStatus=ACTIVE";
     public static String idURLConstant                  = "{id}";
+    public static String RequestDynamicSolrIndexParam   = "eventIds";
+    public static String GetEventRequestParam           = QuestionMark + "requestParam=%s";
 }

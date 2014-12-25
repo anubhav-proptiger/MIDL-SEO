@@ -17,8 +17,11 @@ import com.proptiger.core.model.cms.Locality;
 import com.proptiger.core.model.cms.Project;
 import com.proptiger.core.model.cms.Property;
 import com.proptiger.core.model.cms.Suburb;
+import com.proptiger.core.model.event.EventGenerated;
+import com.proptiger.core.model.event.dto.EventRequestDto;
 import com.proptiger.core.model.proptiger.Image;
 import com.proptiger.core.model.proptiger.PortfolioListing;
+import com.proptiger.core.model.solr.DynamicSolrIndex;
 import com.proptiger.core.model.user.portfolio.Portfolio;
 import com.proptiger.core.pojo.Selector;
 import com.proptiger.core.pojo.response.APIResponse;
@@ -394,6 +397,68 @@ public class ResponseInterceptor {
 
         return builders;
     }
+    
+    public List<EventGenerated> getLatestGeneratedEvents(EventRequestDto eventRequestDto){
+    	 String url = PropertyReader.getRequiredPropertyAsString(PropertyKeys.EVENTS_API_URL);
+    	 String buildParam = String.format(URLSEOGenerationConstants.GetEventRequestParam, gson.toJson(eventRequestDto));
+    	 
+    	 URI uri = URI.create(UriComponentsBuilder.fromUriString(getAPIUrl(url)+buildParam).build().encode().toString());
+         
+         
+         List<EventGenerated> eventGenerateds = null;
+         try {
+             eventGenerateds = httpRequestUtil.getInternalApiResultAsTypeList(uri, EventGenerated.class);
+         }
+         catch (Exception e) {
+             // TODO Auto-generated catch block
+             e.printStackTrace();
+         }
+
+         return eventGenerateds;
+    }
+    
+    public List<DynamicSolrIndex> getSolrIndexEvents(List<Integer> eventIds){
+    	 String url = PropertyReader.getRequiredPropertyAsString(PropertyKeys.SOLR_INDEX_API_URL);
+    	 String buildParam = URLSEOGenerationConstants.QuestionMark;
+    	 for(Integer eventId:eventIds){
+    		 buildParam += URLSEOGenerationConstants.RequestDynamicSolrIndexParam + "=" + eventId + "&";
+    	 }
+    	 buildParam = buildParam.substring(0, buildParam.length()-1);
+         URI uri = URI.create(UriComponentsBuilder.fromUriString(getAPIUrl(url)+buildParam).build().encode().toString());
+         
+         
+         List<DynamicSolrIndex> dynamicSolrIndexes = null;
+         try {
+             dynamicSolrIndexes = httpRequestUtil.getInternalApiResultAsTypeList(uri, DynamicSolrIndex.class);
+         }
+         catch (Exception e) {
+             // TODO Auto-generated catch block
+             e.printStackTrace();
+         }
+
+         return dynamicSolrIndexes;
+    }
+    
+    public boolean postSolrIndexEvents(List<DynamicSolrIndex> dynamicSolrIndexs){
+   	 	String url = PropertyReader.getRequiredPropertyAsString(PropertyKeys.SOLR_INDEX_API_URL);
+   	 	String postData = gson.toJson(dynamicSolrIndexs);
+   	 
+   	 	URI uri = URI.create(UriComponentsBuilder.fromUriString(getAPIUrl(url)).build().encode().toString());
+        
+        
+        List<DynamicSolrIndex> dynamicSolrIndexes = null;
+        try {
+            dynamicSolrIndexes = httpRequestUtil.postInternalRequest(uri, dynamicSolrIndexes, DynamicSolrIndex.class);
+        }
+        catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+   }
+
 
     private Object getApiResponseData(Object retVal) {
         if (retVal == null || !(retVal instanceof APIResponse)) {

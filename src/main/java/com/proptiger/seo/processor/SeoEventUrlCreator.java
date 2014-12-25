@@ -5,18 +5,15 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.proptiger.core.enums.DomainObject;
-import com.proptiger.core.model.cms.Builder;
-import com.proptiger.data.event.model.EventGenerated;
-//import com.proptiger.data.model.URLDetail;
-import com.proptiger.data.service.BuilderService;
-import com.proptiger.seo.service.URLCreaterService;
+import com.proptiger.core.model.event.EventGenerated;
 import com.proptiger.seo.model.SeoURLs;
 import com.proptiger.seo.model.URLCategories;
 import com.proptiger.seo.model.URLDetail;
 import com.proptiger.seo.service.SeoURLService;
+import com.proptiger.seo.service.URLCreaterService;
+//import com.proptiger.data.model.URLDetail;
 
 @Service
 public class SeoEventUrlCreator {
