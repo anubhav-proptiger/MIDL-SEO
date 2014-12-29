@@ -30,6 +30,7 @@ import com.proptiger.core.exception.ProAPIException;
 import com.proptiger.core.exception.ResourceNotAvailableException;
 import com.proptiger.core.model.cms.Builder;
 import com.proptiger.core.model.cms.City;
+import com.proptiger.core.model.cms.LandMark;
 import com.proptiger.core.model.cms.Locality;
 import com.proptiger.core.model.cms.Project;
 import com.proptiger.core.model.cms.Property;
@@ -81,6 +82,8 @@ public class SeoPageService {
     private static Logger      logger       = LoggerFactory.getLogger(SeoPageService.class);
 
     private Pattern            pattern      = Pattern.compile("(<.+?>)");
+    
+    private boolean			   isDomainLandMark;
 
     public Map<String, Object> getSeoContentForPage(URLDetail urlDetail) throws IllegalAccessException,
             InvocationTargetException, NoSuchMethodException {
@@ -131,6 +134,10 @@ public class SeoPageService {
     	    String startChar = imageType.substring(0, 1);
     	    imageType = imageType.replaceFirst(startChar, startChar.toUpperCase());
     		urlDetail.setImageType(imageType);
+    		if (image.getImageTypeObj().getObjectType().getType().equals(Constants.LANDMARK)) {
+    			urlDetail.setObjectId(new Long(image.getObjectId()).intValue());
+    			isDomainLandMark = true;
+    		}
     	}
 	}
 
@@ -286,6 +293,7 @@ public class SeoPageService {
         Gson gson = new Gson();
         Integer page = null;
         String  imageType = null;
+        LandMark landMark = null;
 
         if (urlDetail.getPropertyId() != null) {
             property = responseInterceptor.getPropertyById(urlDetail.getPropertyId());
@@ -345,6 +353,13 @@ public class SeoPageService {
                 throw new ResourceNotAvailableException(ResourceType.SUBURB, ResourceTypeAction.GET);
             }
             city = suburb.getCity();
+        }
+        if (isDomainLandMark && urlDetail.getObjectId() != null) {
+        	landMark = responseInterceptor.getLandMarkById(urlDetail.getObjectId());
+        	if (landMark == null) {
+        		 throw new ResourceNotAvailableException(ResourceType.LANDMARK, ResourceTypeAction.GET);
+        	}
+        	urlDetail.setCityId(landMark.getCityId());
         }
         if (urlDetail.getCityName() != null || urlDetail.getCityId() != null) {
             
@@ -413,7 +428,8 @@ public class SeoPageService {
                 url,
                 imageURL,
                 page,
-                imageType);
+                imageType,
+                landMark);
     }
 
     /*
@@ -461,6 +477,7 @@ public class SeoPageService {
         private String   imageURL;
         private Integer  page;
         private String   imageType;
+        private LandMark landMark;
 
         public CompositeSeoTokenData(
                 Property property,
@@ -481,7 +498,8 @@ public class SeoPageService {
                 String url,
                 String imageURL,
                 Integer page,
-                String imageType) {
+                String imageType,
+                LandMark landMark) {
             this.property = property;
             this.project = project;
             this.locality = locality;
@@ -501,6 +519,7 @@ public class SeoPageService {
             this.imageURL = imageURL;
             this.page = page;
             this.imageType = imageType;
+            this.landMark = landMark;
         }
 
         public Property getProperty() {
@@ -653,6 +672,14 @@ public class SeoPageService {
 
 		public void setImageType(String imageType) {
 			this.imageType = imageType;
+		}
+
+		public LandMark getLandMark() {
+			return landMark;
+		}
+
+		public void setLandMark(LandMark landMark) {
+			this.landMark = landMark;
 		}
     }
 }
