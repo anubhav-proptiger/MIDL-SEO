@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.proptiger.core.enums.DomainObject;
@@ -14,6 +15,7 @@ import com.proptiger.seo.model.URLCategories;
 @Service
 public class URLCategoriesService {
     
+	@Autowired
     private URLCategoriesDao urlCategoriesDao;
     
     public List<URLCategories> findAll(){

@@ -9,6 +9,6 @@ import com.proptiger.seo.model.URLCategories;
 
 public interface URLCategoriesDao extends PagingAndSortingRepository<URLCategories, Integer>{
     
-    @Query("select uc from URLCategories JOIN FETCH ObjectType JOIN Fetch URLPropertyType JOIN Fetch URLPropertyTypeCategory")
+    @Query("select UC from URLCategories UC JOIN FETCH UC.objectType JOIN Fetch UC.urlPropertyTypes UPT JOIN Fetch UPT.urlPropertyTypeCategory")
     List<URLCategories> getAllUrlCategories();
 }
