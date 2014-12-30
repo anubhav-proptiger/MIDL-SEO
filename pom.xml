@@ -5,8 +5,8 @@
   <version>0.0.1-SNAPSHOT</version>
   <packaging>war</packaging>
   	<properties>
-  		<spring.version>3.2.2.RELEASE</spring.version>
-  		<jdk.version>1.7</jdk.version>
+		<spring.version>4.1.2.RELEASE</spring.version>
+        <jdk.version>1.8</jdk.version>
   		<skipTests>true</skipTests>
 	</properties>
 	<profiles>
@@ -19,7 +19,7 @@
 		<profile>
 			<id>release</id>
 			<properties>
-				<midl-core.version>1.0.31</midl-core.version>
+				<midl-core.version>2.0.0</midl-core.version>
 			</properties>
 		</profile>
 	</profiles>
