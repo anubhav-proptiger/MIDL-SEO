@@ -19,4 +19,5 @@ public class URLSEOGenerationConstants {
     public static String SelectorGetCityById            = "{\"filters\":{\"and\":[{\"equal\":{\"id\":%d}}]},\"fields\":[\"id\",\"label\",\"url\", \"centerLatitude\", \"centerLongitude\"]}";
     public static String RequestPortfolioById           = "listingStatus=ACTIVE";
     public static String idURLConstant                  = "{id}";
+    public static String SelectorGetLandMarkById        = "{\"fields\":[\"id\",\"cityId\",\"name\"]}";
 }
