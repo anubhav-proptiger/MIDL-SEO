@@ -12,17 +12,19 @@ import com.proptiger.seo.processor.handler.SeoEventHandler;
 @Component
 @QuartzScheduledClass
 public class SeoEventInitiator {
-    private static Logger                logger = LoggerFactory.getLogger(SeoEventInitiator.class);
+	private static Logger logger = LoggerFactory
+			.getLogger(SeoEventInitiator.class);
 
-    @Autowired
-    private SeoEventHandler seoEventHandler;
-    
-    @QuartzScheduledJob(fixedDelay = 2000, initialDelay = 1)
-    public void generateUrl(){
-        Thread.currentThread().setName("Seo Event Initiator.");
+	@Autowired
+	private SeoEventHandler seoEventHandler;
 
-        logger.info("SEO Event URL Generator starting.");
-        int numberOfUrls = seoEventHandler.generateUrls(100);
-        logger.info("SEO Event URL Generator : generated "+numberOfUrls+" urls. ");
-    }
+	@QuartzScheduledJob(fixedDelayString = "${scheduler.fixeddelay.seo}", initialDelayString = "${scheduler.initialdelay.seo.urlGenerator}")
+	public void generateUrl() {
+		Thread.currentThread().setName("Seo Event Initiator.");
+
+		logger.info("SEO Event URL Generator starting.");
+		int numberOfUrls = seoEventHandler.generateUrls(100);
+		logger.info("SEO Event URL Generator : generated " + numberOfUrls
+				+ " urls. ");
+	}
 }
