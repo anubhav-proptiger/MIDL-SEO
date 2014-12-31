@@ -27,6 +27,6 @@ public class URLSEOGenerationConstants {
     public static String idURLConstant                  = "{id}";
     public static String RequestDynamicSolrIndexParam   = "eventIds";
     public static String GetEventRequestParam           = QuestionMark + "requestParam=%s";
-    public static String PostSubscriberEventId[]        = {QuestionMark + "eventId=%d", "{subscriberName}"};
+    public static String PostSubscriberEventId[]        = {"eventId=%d", "{subscriberName}"};
 	public static String SelectorGetLandMarkById        = "{\"fields\":[\"id\",\"cityId\",\"name\"]}";
 }

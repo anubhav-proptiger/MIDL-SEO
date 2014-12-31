@@ -32,7 +32,7 @@ public class URLPropertyTypes extends BaseModel {
     private String urlSubPart;
     
     @OneToOne
-    @JoinColumn(name = "url_property_type_category_id")
+    @JoinColumn(name = "url_property_category_id")
     @JsonIgnore
     private URLPropertyTypeCategory urlPropertyTypeCategory;
 

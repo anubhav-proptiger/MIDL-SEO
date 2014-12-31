@@ -469,6 +469,7 @@ public class URLCreaterService {
                     + builderName
                     + this.HYPHEN
                     + projectName
+                    +this.HYPHEN
                     + project.getProjectId();
         }
 
@@ -687,7 +688,7 @@ public class URLCreaterService {
         }
         name = name.replaceAll("[\\(\\).,&_]", "");
         name = name.trim();
-        return name;
+        return name.toLowerCase();
     }
 
     private List<Locality> getAllLocalities() {

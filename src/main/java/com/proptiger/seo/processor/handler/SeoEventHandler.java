@@ -136,13 +136,13 @@ public class SeoEventHandler {
 
 	private List<String> getUrlGeneratorEventTypeList() {
 		List<String> eventTypeNames = new ArrayList<String>();
-		eventTypeNames.add(EventTypeEnum.BuilderGenerateUrl.getName());
+		/*eventTypeNames.add(EventTypeEnum.BuilderGenerateUrl.getName());
 		eventTypeNames.add(EventTypeEnum.ProjectGenerateUrl.getName());
 		eventTypeNames.add(EventTypeEnum.CityGenerateUrl.getName());
 		eventTypeNames.add(EventTypeEnum.PropertyGenerateUrl.getName());
 		eventTypeNames.add(EventTypeEnum.SuburbGenerateUrl.getName());
-		eventTypeNames.add(EventTypeEnum.LocalityGenerateUrl.getName());
-
+		eventTypeNames.add(EventTypeEnum.LocalityGenerateUrl.getName());*/
+		eventTypeNames.add(EventTypeEnum.ProjectInsertionUrl.getName());
 		return eventTypeNames;
 	}
 }

@@ -28,7 +28,7 @@ public class URLCategories extends BaseModel{
     @Column(name="name")
     private String name;
     
-    @Column(name="column_call")
+    @Column(name="content_call")
     private String contentCall;
     
     @OneToOne

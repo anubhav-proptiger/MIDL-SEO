@@ -17,7 +17,7 @@ public class SeoEventInitiator {
     @Autowired
     private SeoEventHandler seoEventHandler;
     
-    @QuartzScheduledJob(fixedDelay = 200, initialDelay = 1)
+    @QuartzScheduledJob(fixedDelay = 2000, initialDelay = 1)
     public void generateUrl(){
         Thread.currentThread().setName("Seo Event Initiator.");
 

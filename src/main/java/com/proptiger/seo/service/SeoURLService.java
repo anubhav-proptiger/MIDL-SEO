@@ -22,13 +22,13 @@ public class SeoURLService {
 	@Autowired
 	private ResponseInterceptor responseInterceptor;
 
-	public SeoURLs saveUrls(String url, int objectId,
+	public int saveUrls(String url, int objectId,
 			URLCategories urlCategories) {
-		SeoURLs seoURLs = seoURLsDao.insertQuery(url, urlCategories.getId(),
+		int returnStatus = seoURLsDao.insertQuery(url, urlCategories.getId(),
 				objectId, URLStatus.Active.name(), URLInfo.New.name(),
 				URLInfo.ReActive.name());
 
-		return seoURLs;
+		return returnStatus;
 	}
 
 	public SeoURLs createSeoURLObject(String url, int objectId,

@@ -522,6 +522,9 @@ public class ResponseInterceptor {
 	}
 
 	public boolean postSolrIndexEvents(List<DynamicSolrIndex> dynamicSolrIndexs) {
+		if(dynamicSolrIndexs == null || dynamicSolrIndexs.isEmpty()){
+			return true;
+		}
 		String url = PropertyReader
 				.getRequiredPropertyAsString(PropertyKeys.SOLR_INDEX_API_URL);
 		String postData = gson.toJson(dynamicSolrIndexs);
@@ -547,7 +550,7 @@ public class ResponseInterceptor {
 		String buildParam = String.format(URLSEOGenerationConstants.PostSubscriberEventId[0], lastEventId);
 		String url = PropertyReader
 				.getRequiredPropertyAsString(PropertyKeys.SUBSCRIBER_LAST_EVENT_UPDATE_API_URL);
-		url = url.replace(URLSEOGenerationConstants.PostSubscriberEventId[1], subscriberName.name()) + buildParam;
+		url = url.replace(URLSEOGenerationConstants.PostSubscriberEventId[1], subscriberName.name()) + "?" + buildParam;
 		
 		URI uri = URI.create(UriComponentsBuilder.fromUriString(getAPIUrl(url))
 				.build().encode().toString());
