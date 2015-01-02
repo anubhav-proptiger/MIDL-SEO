@@ -17,7 +17,7 @@ import javax.persistence.Table;
 import com.proptiger.core.model.BaseModel;
 
 @Entity
-@Table(name = "seodb.seo_urls")
+@Table(name = "seo_urls")
 public class SeoURLs extends BaseModel {
     public SeoURLs() {
         super();
