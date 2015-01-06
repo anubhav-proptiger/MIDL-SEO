@@ -7,6 +7,11 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+
+import com.proptiger.seo.enums.BuilderPropertyTypes;
+import com.proptiger.seo.enums.PropertyType;
+import com.proptiger.seo.enums.TaxonomyPropertyTypes;
+
 /**
  * 
  *
@@ -35,6 +40,13 @@ public class URLDetail {
 	private Integer imageId;
 	private Integer page;
 	private String  imageType;
+    private String                areaType;
+    private PropertyType          urlPropertyTypeCategory;
+    private TaxonomyPropertyTypes taxonomyPropertyType;
+    private BuilderPropertyTypes  builderPropertyType;
+    private String                localityName;
+    private String                suburbName;
+    private URLCategories         urlCategory;
     /**
      * Default Value of bedroomString is empty string. Do not change it.
      */
@@ -243,4 +255,70 @@ public class URLDetail {
 	public void setImageType(String imageType) {
 		this.imageType = imageType;
 	}
+
+
+    public String getAreaType() {
+        return areaType;
+    }
+
+    public void setAreaType(String areaType) {
+        this.areaType = areaType;
+    }
+
+    public PropertyType getUrlPropertyType() {
+        return urlPropertyTypeCategory;
+    }
+
+    public void setUrlPropertyType(PropertyType urlPropertyType) {
+        this.urlPropertyTypeCategory = urlPropertyType;
+    }
+
+    public PropertyType getUrlPropertyTypeCategory() {
+        return urlPropertyTypeCategory;
+    }
+
+    public void setUrlPropertyTypeCategory(PropertyType urlPropertyTypeCategory) {
+        this.urlPropertyTypeCategory = urlPropertyTypeCategory;
+    }
+
+    public TaxonomyPropertyTypes getTaxonomyPropertyType() {
+        return taxonomyPropertyType;
+    }
+
+    public void setTaxonomyPropertyType(TaxonomyPropertyTypes taxonomyPropertyType) {
+        this.taxonomyPropertyType = taxonomyPropertyType;
+    }
+
+    public BuilderPropertyTypes getBuilderPropertyType() {
+        return builderPropertyType;
+    }
+
+    public void setBuilderPropertyType(BuilderPropertyTypes builderPropertyType) {
+        this.builderPropertyType = builderPropertyType;
+    }
+
+    public String getLocalityName() {
+        return this.localityName;
+    }
+
+    public void setLocalityName(String localityName) {
+        this.localityName = localityName;
+    }
+
+    public String getSuburbName() {
+        return suburbName;
+    }
+
+    public void setSuburbName(String suburbName) {
+        this.suburbName = suburbName;
+    }
+
+    public URLCategories getUrlCategory() {
+        return urlCategory;
+    }
+
+    public void setUrlCategory(URLCategories urlCategory) {
+        this.urlCategory = urlCategory;
+    }
+    
 }
