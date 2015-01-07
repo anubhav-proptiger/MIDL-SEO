@@ -15,6 +15,6 @@ import com.proptiger.core.config.scheduling.QuartzSchedulerConfigurer;
 @Configuration
 @EnableAsync
 @EnableScheduling
-public class AppSchedulingConfig extends QuartzSchedulerConfigurer{
+public class AppSchedulingConfig /*extends QuartzSchedulerConfigurer*/{
 
 }
