@@ -38,7 +38,6 @@ import com.proptiger.core.model.cms.Suburb;
 import com.proptiger.core.model.proptiger.Image;
 import com.proptiger.core.pojo.LimitOffsetPageRequest;
 import com.proptiger.core.pojo.Selector;
-import com.proptiger.core.pojo.response.APIResponse;
 import com.proptiger.core.util.Constants;
 import com.proptiger.core.util.ExclusionAwareBeanUtilsBean;
 import com.proptiger.seo.interceptor.ResponseInterceptor;
