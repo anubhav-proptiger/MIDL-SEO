@@ -38,6 +38,7 @@ import com.proptiger.core.model.cms.Suburb;
 import com.proptiger.core.model.proptiger.Image;
 import com.proptiger.core.pojo.LimitOffsetPageRequest;
 import com.proptiger.core.pojo.Selector;
+import com.proptiger.core.pojo.response.APIResponse;
 import com.proptiger.core.util.Constants;
 import com.proptiger.core.util.ExclusionAwareBeanUtilsBean;
 import com.proptiger.seo.interceptor.ResponseInterceptor;
@@ -54,36 +55,36 @@ import com.proptiger.seo.repo.SeoPageDao;
 public class SeoPageService {
 
     @Autowired
-    private ApplicationContext appContext;
+    private ApplicationContext  appContext;
 
     @Autowired
-    private SeoFooterDao       seoFooterDao;
+    private SeoFooterDao        seoFooterDao;
 
     @Autowired
-    private SeoPageDao         seoPageDao;
+    private SeoPageDao          seoPageDao;
 
     @Autowired
-    private URLService         urlService;
+    private URLService          urlService;
 
-    private RestTemplate       restTemplate = new RestTemplate();
+    private RestTemplate        restTemplate = new RestTemplate();
 
     @Value("${proptiger.url}")
-    private String             websiteHost;
-    
-    @Autowired
-    private ApplicationContext applicationContext;
+    private String              websiteHost;
 
     @Autowired
-    private ProjectSeoTagsDao  projectSeoTagsDao;
-    
+    private ApplicationContext  applicationContext;
+
+    @Autowired
+    private ProjectSeoTagsDao   projectSeoTagsDao;
+
     @Autowired
     private ResponseInterceptor responseInterceptor;
 
-    private static Logger      logger       = LoggerFactory.getLogger(SeoPageService.class);
+    private static Logger       logger       = LoggerFactory.getLogger(SeoPageService.class);
 
-    private Pattern            pattern      = Pattern.compile("(<.+?>)");
-    
-    private boolean			   isDomainLandMark;
+    private Pattern             pattern      = Pattern.compile("(<.+?>)");
+
+    private boolean             isDomainLandMark;
 
     public Map<String, Object> getSeoContentForPage(URLDetail urlDetail) throws IllegalAccessException,
             InvocationTargetException, NoSuchMethodException {
@@ -100,15 +101,16 @@ public class SeoPageService {
 
     /*
      * First ProjectSeoTags is retrieved from DB (PROJECT_SEO_TAGS Table) for an
-     * URL, and all fields except null or empty, are copied to the seoPage for a 
+     * URL, and all fields except null or empty, are copied to the seoPage for a
+     * 
      * templateId. If there exist any tags in the seoPage it get replaced with
      * the appropriate entry and finally returned.
      */
     private SeoPage getSeoPage(URLDetail urlDetail) {
-    	String url = urlDetail.getUrl();
-    	if (url !=null && url.startsWith("gallery/")) {
-    		updateUrlDetailWithImageType(urlDetail, url);
-    	}
+        String url = urlDetail.getUrl();
+        if (url != null && url.startsWith("gallery/")) {
+            updateUrlDetailWithImageType(urlDetail, url);
+        }
         SeoPage seoPage = applicationContext.getBean(SeoPageService.class).getSeoPageByTemplateId(
                 urlDetail.getTemplateId(),
                 url);
@@ -116,43 +118,49 @@ public class SeoPageService {
         if (projectSeoTags != null) {
             copyProperties(projectSeoTags, seoPage);
         }
-        return getSeoMetaContentForPage(urlDetail, seoPage);
+        if (seoPage != null && seoPage.getTitle() != null) {
+            return getSeoMetaContentForPage(urlDetail, seoPage);
+        }
+        else {
+            return null;
+        }
     }
 
     private void updateUrlDetailWithImageType(URLDetail urlDetail, String url) {
-    	Long imageId = Long.parseLong(url.substring(url.lastIndexOf("-") + 1));
-    	Image image = responseInterceptor.getImageById(imageId);
-    	if (image != null) {
-    		String imageType = image.getImageTypeObj().getType(); 
-    		// Constructing template Id dynamically by appending "_ImageType" (in upper case)
-    		urlDetail.setTemplateId(urlDetail.getTemplateId() + "_" + imageType.toUpperCase()); 
-    		
-    		//Introducing space before Uppercase character of ImageType 
-    		imageType = addSpaceBeforeUpperCaseCharacter(imageType, 0, imageType.length());
-    				
-    		// First character from ImageType to convert in upper case
-    	    String startChar = imageType.substring(0, 1);
-    	    imageType = imageType.replaceFirst(startChar, startChar.toUpperCase());
-    		urlDetail.setImageType(imageType);
-    		if (image.getImageTypeObj().getObjectType().getType().equals(Constants.LANDMARK)) {
-    			urlDetail.setObjectId(new Long(image.getObjectId()).intValue());
-    			isDomainLandMark = true;
-    		}
-    	}
-	}
+        Long imageId = Long.parseLong(url.substring(url.lastIndexOf("-") + 1));
+        Image image = responseInterceptor.getImageById(imageId);
+        if (image != null) {
+            String imageType = image.getImageTypeObj().getType();
+            // Constructing template Id dynamically by appending "_ImageType"
+            // (in upper case)
+            urlDetail.setTemplateId(urlDetail.getTemplateId() + "_" + imageType.toUpperCase());
+
+            // Introducing space before Uppercase character of ImageType
+            imageType = addSpaceBeforeUpperCaseCharacter(imageType, 0, imageType.length());
+
+            // First character from ImageType to convert in upper case
+            String startChar = imageType.substring(0, 1);
+            imageType = imageType.replaceFirst(startChar, startChar.toUpperCase());
+            urlDetail.setImageType(imageType);
+            if (image.getImageTypeObj().getObjectType().getType().equals(Constants.LANDMARK)) {
+                urlDetail.setObjectId(new Long(image.getObjectId()).intValue());
+                isDomainLandMark = true;
+            }
+        }
+    }
 
     private String addSpaceBeforeUpperCaseCharacter(String imageType, int index, int length) {
-		if (index < length) {
-			if (Character.isUpperCase(imageType.charAt(index))) {
-				imageType = imageType.replace(imageType.substring(index, index + 1), " " + imageType.charAt(index));
-				return addSpaceBeforeUpperCaseCharacter(imageType, index + 2, length);
-			}
-			return addSpaceBeforeUpperCaseCharacter(imageType, index + 1, length);
-		}
-		return imageType;
-	}
+        if (index < length) {
+            if (Character.isUpperCase(imageType.charAt(index))) {
+                imageType = imageType.replace(imageType.substring(index, index + 1), " " + imageType.charAt(index));
+                return addSpaceBeforeUpperCaseCharacter(imageType, index + 2, length);
+            }
+            return addSpaceBeforeUpperCaseCharacter(imageType, index + 1, length);
+        }
+        return imageType;
+    }
 
-	private void copyProperties(ProjectSeoTags projectSeoTags, SeoPage seoPage) {
+    private void copyProperties(ProjectSeoTags projectSeoTags, SeoPage seoPage) {
         BeanUtilsBean beanUtilsBean = new ExclusionAwareBeanUtilsBean();
         for (Field field : projectSeoTags.getClass().getDeclaredFields()) {
             try {
@@ -228,8 +236,10 @@ public class SeoPageService {
         seopage.setH3(replace(seopage.getH3(), mappings, urlDetail).trim());
         seopage.setH4(replace(seopage.getH4(), mappings, urlDetail).trim());
         if (seopage.getOtherParams() != null) {
-            for(String key : seopage.getOtherParams().keySet()) {
-                seopage.getOtherParams().put(key, replace(seopage.getOtherParams().get(key), mappings, urlDetail).trim());
+            for (String key : seopage.getOtherParams().keySet()) {
+                seopage.getOtherParams().put(
+                        key,
+                        replace(seopage.getOtherParams().get(key), mappings, urlDetail).trim());
             }
         }
     }
@@ -292,12 +302,12 @@ public class SeoPageService {
         String imageURL = null;
         Gson gson = new Gson();
         Integer page = null;
-        String  imageType = null;
+        String imageType = null;
         LandMark landMark = null;
 
         if (urlDetail.getPropertyId() != null) {
             property = responseInterceptor.getPropertyById(urlDetail.getPropertyId());
-            //propertyService.getPropertyFromSolr(urlDetail.getPropertyId());
+            // propertyService.getPropertyFromSolr(urlDetail.getPropertyId());
             if (property == null) {
                 throw new ResourceNotAvailableException(ResourceType.PROPERTY, ResourceTypeAction.GET);
             }
@@ -320,7 +330,8 @@ public class SeoPageService {
             String json = "{\"fields\":[\"distinctBedrooms\"]}";
             Selector selector = gson.fromJson(json, Selector.class);
             project = responseInterceptor.getProjectById(urlDetail.getProjectId(), selector);
-            //projectService.getProjectInfoDetailsFromSolr(selector, urlDetail.getProjectId());
+            // projectService.getProjectInfoDetailsFromSolr(selector,
+            // urlDetail.getProjectId());
             if (project == null) {
                 throw new ResourceNotAvailableException(ResourceType.PROJECT, ResourceTypeAction.GET);
             }
@@ -339,7 +350,7 @@ public class SeoPageService {
         }
         if (urlDetail.getLocalityId() != null) {
             locality = responseInterceptor.getLocalityById(urlDetail.getLocalityId());
-            //localityService.getLocality(urlDetail.getLocalityId());
+            // localityService.getLocality(urlDetail.getLocalityId());
             if (locality == null) {
                 throw new ResourceNotAvailableException(ResourceType.LOCALITY, ResourceTypeAction.GET);
             }
@@ -348,28 +359,28 @@ public class SeoPageService {
         }
         if (urlDetail.getSuburbId() != null) {
             suburb = responseInterceptor.getSuburbById(urlDetail.getSuburbId());
-            //suburbService.getSuburbById(urlDetail.getSuburbId());
+            // suburbService.getSuburbById(urlDetail.getSuburbId());
             if (suburb == null) {
                 throw new ResourceNotAvailableException(ResourceType.SUBURB, ResourceTypeAction.GET);
             }
             city = suburb.getCity();
         }
         if (isDomainLandMark && urlDetail.getObjectId() != null) {
-        	landMark = responseInterceptor.getLandMarkById(urlDetail.getObjectId());
-        	if (landMark == null) {
-        		 throw new ResourceNotAvailableException(ResourceType.LANDMARK, ResourceTypeAction.GET);
-        	}
-        	urlDetail.setCityId(landMark.getCityId());
+            landMark = responseInterceptor.getLandMarkById(urlDetail.getObjectId());
+            if (landMark == null) {
+                throw new ResourceNotAvailableException(ResourceType.LANDMARK, ResourceTypeAction.GET);
+            }
+            urlDetail.setCityId(landMark.getCityId());
         }
         if (urlDetail.getCityName() != null || urlDetail.getCityId() != null) {
-            
-            if(urlDetail.getCityName() != null){
-                city = responseInterceptor.getCityByName(urlDetail.getCityName());//cityService.getCityByName(urlDetail.getCityName());
+
+            if (urlDetail.getCityName() != null) {
+                city = responseInterceptor.getCityByName(urlDetail.getCityName());// cityService.getCityByName(urlDetail.getCityName());
             }
-            else{
-                city = responseInterceptor.getCityById(urlDetail.getCityId());//cityService.getCityByName(urlDetail.getCityName());
+            else {
+                city = responseInterceptor.getCityById(urlDetail.getCityId());// cityService.getCityByName(urlDetail.getCityName());
             }
-            
+
             if (city == null) {
                 throw new ResourceNotAvailableException(ResourceType.CITY, ResourceTypeAction.GET);
             }
@@ -377,7 +388,7 @@ public class SeoPageService {
             centerLongitude = city.getCenterLongitude();
         }
         if (urlDetail.getBuilderId() != null) {
-            builder = responseInterceptor.getBuilderById(urlDetail.getBuilderId());//builderService.getBuilderById(urlDetail.getBuilderId());
+            builder = responseInterceptor.getBuilderById(urlDetail.getBuilderId());// builderService.getBuilderById(urlDetail.getBuilderId());
             if (builder == null) {
                 throw new ResourceNotAvailableException(ResourceType.BUILDER, ResourceTypeAction.GET);
             }
@@ -392,23 +403,24 @@ public class SeoPageService {
             priceRangeStr = minBudget + "-" + maxBudget;
         }
 
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+                .getRequest();
         if (request.getServerName() != null) {
             serverName = request.getServerName();
         }
-        
+
         if (urlDetail.getUrl() != null) {
             url = urlDetail.getUrl();
         }
-        
+
         if (urlDetail.getPage() != null) {
-        	page = urlDetail.getPage();
+            page = urlDetail.getPage();
         }
-        
+
         if (urlDetail.getImageType() != null) {
-        	imageType = urlDetail.getImageType();
+            imageType = urlDetail.getImageType();
         }
-        
+
         return new CompositeSeoTokenData(
                 property,
                 project,
@@ -489,7 +501,7 @@ public class SeoPageService {
                 String bedrooms,
                 String priceRange,
                 Integer bathrooms,
-                Integer size, 
+                Integer size,
                 Double centerLatitude,
                 Double centerLongitude,
                 Double latitude,
@@ -601,7 +613,7 @@ public class SeoPageService {
         public void setSize(Integer size) {
             this.size = size;
         }
-        
+
         public Double getCenterLongitude() {
             return centerLongitude;
         }
@@ -658,28 +670,28 @@ public class SeoPageService {
             this.imageURL = imageURL;
         }
 
-		public Integer getPage() {
-			return page;
-		}
+        public Integer getPage() {
+            return page;
+        }
 
-		public void setPage(Integer page) {
-			this.page = page;
-		}
+        public void setPage(Integer page) {
+            this.page = page;
+        }
 
-		public String getImageType() {
-			return imageType;
-		}
+        public String getImageType() {
+            return imageType;
+        }
 
-		public void setImageType(String imageType) {
-			this.imageType = imageType;
-		}
+        public void setImageType(String imageType) {
+            this.imageType = imageType;
+        }
 
-		public LandMark getLandMark() {
-			return landMark;
-		}
+        public LandMark getLandMark() {
+            return landMark;
+        }
 
-		public void setLandMark(LandMark landMark) {
-			this.landMark = landMark;
-		}
+        public void setLandMark(LandMark landMark) {
+            this.landMark = landMark;
+        }
     }
 }
